@@ -1,1 +1,1 @@
-# K-means---Hadoop
+# K-means Hadoop
