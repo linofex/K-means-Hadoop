@@ -9,7 +9,7 @@ import java.io.DataOutput;
 public class Mean extends Point implements Writable, Comparable<Mean>{
   private Text id; // Text should save byte wrt IntWritable
 
-  public Mean(Point coordinates, Text id){
+  public Mean(Point coordinates, String id){
     super(coordinates);
     this.id.set(id);
   }
@@ -25,6 +25,14 @@ public class Mean extends Point implements Writable, Comparable<Mean>{
 
   }
   
+  @Override
+  public void set(double[] point, int sum, String label){
+    super.set(point, sum);
+    id.set(label);
+
+  }
+  
+
   @Override
   public void readFields(DataInput in) throws IOException {
     super.readFields(in);

@@ -57,6 +57,12 @@ public class Point implements Writable {
 
   }
 
+  public void set(double[] point, int sum){
+    this.coordinates.set(point);
+    this.pointCount.set(sum);
+
+  }
+  
   public void add(double[] point, int sum){
     this.add(point);
     this.pointCount.set(this.getPointCount() + sum - 1); //-1 since previous add adds 1. 
