@@ -76,7 +76,7 @@ def generateTimestamp():
   now = datetime.now()
   
   # dd/mm/YY H:M:S
-  timestamp = now.strftime("%d/%m/%Y %H:%M:%S")
+  timestamp = now.strftime("%d-%m-%Y_%H:%M:%S")
   return timestamp
 if __name__ == "__main__":
   # generate timestamp to link different files
