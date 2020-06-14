@@ -13,43 +13,38 @@ import java.io.IOException;
 
   public static class KmeansMapper extends Mapper<Object, Text, Mean, Point> {
     
-    private Mean[] means;
+    private Iterator<Mean> meansIterator;
+
 
     @Override
     protected void setup(final Context context) throws IOException, InterruptedException {
+
+      ArrayList<Mean> means  = new ArrayList<>(); 
       Configuration conf = context.getConfiguration();
       Path centroidsPath = new Path(conf.get("centroidsFilePath"));
-      int number_centroids = conf.get("numberOfCentroids");
-      
-      FileSystem fs = FileSystem.get(context.getConfiguration());
+      FileSystem fs = FileSystem.get(conf);
       BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(centroidsPath)));
-      
-      for(int centroid_index = 0; centroid_index < number_centroids; centroid_index++){
-        try {
-          String line = br.readLine();
-          while (line != null){
-          
-            String[] stringCoordinates = line.split(" ");
-            double[] doubleCoordinates = new double[stringCoordinates.length]; 
-          
-          for (int i = 0; i < doubleCoordinates.length; i++)
-            doubleCoordinates[i] = Double.parseDouble(stringCoordinates[i]); 
-          
-          //costruisci il Point
-          Mean centroid = new Mean(new Point(doubleCoordinates), centroid_index);
-          mean[centroid_index] = centroid;
 
-          // be sure to read the next line otherwise you'll get an infinite loop
-          line = br.readLine();
-          }
-       } finally {
-        // you should close out the BufferedReader
+      try {
+        String line = br.readLine();
+        while (line != null){          
+          String[] stringCoordinates = line.split(" ");
+          double[] doubleCoordinates = new double[stringCoordinates.length]; 
+        for (int i = 0; i < doubleCoordinates.length; i++)
+          doubleCoordinates[i] = Double.parseDouble(stringCoordinates[i]);           
+        //costruisci il Point
+        Mean centroid = new Mean(new Point(doubleCoordinates), centroid_index);
+        means.add(centroid);
+        // be sure to read the next line otherwise you'll get an infinite loop
+        line = br.readLine();
+        }
+      } 
+      finally {
+        meansIterator=means.iterator();
         br.close();
       }
-
-       //bisogna vedere se i centroidi sono letti all'inizializzazione o no
-      // se inizializzazione, file unico, altrimenti più file
-      }
+      //bisogna vedere se i centroidi sono letti all'inizializzazione o no
+    // se inizializzazione, file unico, altrimenti più file
     }
       
 

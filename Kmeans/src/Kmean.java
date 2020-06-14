@@ -16,20 +16,28 @@ import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 
-public class Main{
+public class Kmean{
     public static void main(String[] args) throws Exception
     {
         Configuration conf = new Configuration();
+
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
         if (otherArgs.length != 2) {
-            System.err.println("Usage: Kmeans <input> <output>");
+            System.err.println("Usage: Kmeans <input> <output> <number of centroids>");
             System.exit(1);
         }
+        conf.setDouble("threshold",1.0);
+
+        // generazione centroidi su 
+
         System.out.println("args[0]: <input>="+otherArgs[0]);
         System.out.println("args[1]: <output>="+otherArgs[1]);
+        System.out.println("args[2]: <number of centroids>="+otherArgs[2]);
+
+
 
         Job job = Job.getInstance(conf, "Kmeans");
-        job.setJarByClass(InMemoryMovingAverage.class); // non so come impostarlo
+        job.setJarByClass(getClass()); 
 
         // set mapper/combiner/reducer
         job.setMapperClass(KmeansMapper.class);
@@ -48,7 +56,7 @@ public class Main{
         FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
         FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
 
-        job.setInputFormatClass(TextInputFormat.class); // non capisco bene questi due campi a che servono
+        job.setInputFormatClass(TextInputFormat.class); 
         job.setOutputFormatClass(TextOutputFormat.class);
 
         System.exit(job.waitForCompletion(true) ? 0 : 1); // da iterare
