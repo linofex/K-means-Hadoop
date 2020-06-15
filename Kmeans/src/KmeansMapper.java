@@ -1,15 +1,18 @@
 package Kmeans.src;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import java.io.IOException;
+
+import java.util.ArrayList;
+
+
 
   public static class KmeansMapper extends Mapper<Object, Text, Mean, Point> {
     
@@ -24,6 +27,7 @@ import java.io.IOException;
       Path centroidsPath = new Path(conf.get("centroidsFilePath"));
       FileSystem fs = FileSystem.get(conf);
       BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(centroidsPath)));
+      int centroid_index = 0;
 
       try {
         String line = br.readLine();
@@ -33,7 +37,7 @@ import java.io.IOException;
         for (int i = 0; i < doubleCoordinates.length; i++)
           doubleCoordinates[i] = Double.parseDouble(stringCoordinates[i]);           
         //costruisci il Point
-        Mean centroid = new Mean(new Point(doubleCoordinates), centroid_index);
+        Mean centroid = new Mean(doubleCoordinates, centroid_index++);
         means.add(centroid);
         // be sure to read the next line otherwise you'll get an infinite loop
         line = br.readLine();
@@ -44,7 +48,7 @@ import java.io.IOException;
         br.close();
       }
       //bisogna vedere se i centroidi sono letti all'inizializzazione o no
-    // se inizializzazione, file unico, altrimenti più file
+      // se inizializzazione, file unico, altrimenti più file
     }
       
 
