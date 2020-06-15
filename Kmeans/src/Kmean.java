@@ -26,13 +26,18 @@ public class Kmean{
             System.err.println("Usage: Kmeans <input> <output> <number of centroids>");
             System.exit(1);
         }
-        conf.setDouble("threshold",1.0);
-
-        // generazione centroidi su 
+       
 
         System.out.println("args[0]: <input>="+otherArgs[0]);
         System.out.println("args[1]: <output>="+otherArgs[1]);
-        System.out.println("args[2]: <number of centroids>="+otherArgs[2]);
+        System.out.println("args[2]: <number of centroids>="+otherArgs[2]); 
+
+        // generazione centroidi iniziali
+        // caricare il file su HDFS + definire anche il nome del file
+        // centroidsFileName = nome del file dei centroidi
+
+        conf.setDouble("threshold",1.0);
+        conf.setString('centroidsFilePath', 'centroids/centroids.txt');
 
 
 
