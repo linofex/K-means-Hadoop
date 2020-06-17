@@ -20,15 +20,12 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
     private double threshold;
     private ArrayList<Mean> centroidsList;
     private Text centroidOutput = new Text();
-    private Counter numberOfUnconverger;
 
     @Override
     protected void setup(Context context) {
         Configuration conf = context.getConfiguration();
         threshold = conf.getDouble("threshold", 0.);
         centroidsList = new ArrayList<Mean>();
-        numberOfUnconverger= context.getCounter(CentroidCounter.NUMBER_OF_UNCONVERGED);
-
     }
 
     @Override
@@ -42,8 +39,7 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
             coordinates[index]/=pointCounter;
         Mean newCentroid=new Mean(new Point(coordinates),key.getId());
         if(key.distance(newCentroid) >= threshold) 
-            // incrementa il contatore
-            numberOfUnconverger.increment(1);
+            context.getCounter(CentroidCounter.NUMBER_OF_UNCONVERGED).increment(1);
         centroidsList.add(newCentroid);
 
         centroidOutput.set(newCentroid.toString());
