@@ -19,8 +19,8 @@ public class Mean extends Point implements Writable, Comparable<Mean>{
     this.id.set(id);
   }
 
-  public Text getId(){
-    return this.id;
+  public String getId(){
+    return this.id.toString();
   }
 
   @Override
