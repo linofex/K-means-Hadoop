@@ -16,35 +16,25 @@ import java.util.ArrayList;
 
   public static class KmeansMapper extends Mapper<Object, Text, Mean, Point> {
     
-    private Iterator<Mean> meansIterator;
-
+    private ArrayList<Mean> means;
 
     @Override
     protected void setup(final Context context) throws IOException, InterruptedException {
-
-      ArrayList<Mean> means  = new ArrayList<>(); 
+      means  = new ArrayList<Mean>(); 
       Configuration conf = context.getConfiguration();
       Path centroidsPath = new Path(conf.get("centroidsFilePath"));
       FileSystem fs = FileSystem.get(conf);
       BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(centroidsPath)));
       int centroid_index = 0;
-
       try {
         String line = br.readLine();
-        while (line != null){          
-          String[] stringCoordinates = line.split(" ");
-          double[] doubleCoordinates = new double[stringCoordinates.length]; 
-        for (int i = 0; i < doubleCoordinates.length; i++)
-          doubleCoordinates[i] = Double.parseDouble(stringCoordinates[i]);           
-        //costruisci il Point
-        Mean centroid = new Mean(doubleCoordinates, centroid_index++);
-        means.add(centroid);
-        // be sure to read the next line otherwise you'll get an infinite loop
-        line = br.readLine();
+        while (line != null){                     
+          Mean centroid = new Mean(getCoordinates(line), centroid_index++);
+          means.add(centroid);
+          line = br.readLine();
         }
       } 
       finally {
-        meansIterator=means.iterator();
         br.close();
       }
       //bisogna vedere se i centroidi sono letti all'inizializzazione o no
@@ -52,24 +42,29 @@ import java.util.ArrayList;
     }
       
 
-    //COME VIENE PASSATO IL PUNTO? ARRAY DI DOUBLE O STRINGA??
   public void map(final Object key, final Text value, final Context context) throws IOException, InterruptedException{
-
     //this function finds and emits the index of the closest centroid for each point
-    final Point p = new Point(value.toString()); //RIVEDI
+    final Point point = new Point(getCoordinates(value.toString())); 
     final Float min_distance = Float.MAX_VALUE;
-    int min_index = -1;
-    for(int current_index=0; current_index < means.length; current_index++){
-      final float distance = means[i].distance(p);
-      
-      // min_distance = min_distance > means[current_index].distance(p) ? distance : min_distance;
-      // min_index = min_distance > means[current_index].distance(p) ? current_index : min_index;
-      
+    int min_index = 0;
+    int current_index=0;
+    Iterator<Mean> meanIterator=means.iterator();
+    while(meanIterator.hasNext()){
+      final float distance = point.distance(meanIterator.next());
       if(min_distance>distance){
         min_distance = distance;
         min_index = current_index;
       }
+      current_index++;
     }
-    context.write(newIntWritable(min_index), p); //vedere cosa passi
+    context.write(means.get(min_index), p); 
+  }
+
+  private double[] getCoordinates(String textCoordinates){
+    String[] stringCoordinates = textCoordinates.split(" ");
+    double[] doubleCoordinates = new double[stringCoordinates.length]; 
+    for (int i = 0; i < doubleCoordinates.length; i++)
+      doubleCoordinates[i] = Double.parseDouble(stringCoordinates[i]);   
+    return doubleCoordinates;
   }
 }
