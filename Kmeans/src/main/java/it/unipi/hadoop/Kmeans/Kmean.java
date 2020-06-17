@@ -4,17 +4,13 @@ package it.unipi.hadoop.Kmeans;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.Text;
 
 public class Kmean{
     public static void main(String[] args) throws Exception
@@ -22,7 +18,7 @@ public class Kmean{
         Configuration conf = new Configuration();
 
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
-        if (otherArgs.length != 2) {
+        if (otherArgs.length != 3) {
             System.err.println("Usage: Kmeans <input> <output> <number of centroids>");
             System.exit(1);
         }
@@ -37,12 +33,14 @@ public class Kmean{
         // centroidsFileName = nome del file dei centroidi
 
         conf.setDouble("threshold",1.0);
-        conf.setString('centroidsFilePath', 'centroids/centroids.txt');
+        conf.setStrings("centroidsFilePath", "centroids.txt");
 
 
 
         Job job = Job.getInstance(conf, "Kmeans");
-        job.setJarByClass(getClass()); 
+        // job.setJarByClass(job.getClass()); 
+        job.setJarByClass(Kmean.class); 
+
 
         // set mapper/combiner/reducer
         job.setMapperClass(KmeansMapper.class);
