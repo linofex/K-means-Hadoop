@@ -53,7 +53,7 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
         FileSystem fs = FileSystem.get(conf);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fs.create(centroidsPath, true)));
         Iterator<Mean> meansIterator = centroidsList.iterator();
-        meansIterator.forEachRemaining(line -> {bw.write(line.toString());});
+        meansIterator.forEachRemaining(line -> {bw.write(line.getId() + " " +  line.toString());});
 
     }
 
