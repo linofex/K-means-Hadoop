@@ -16,20 +16,20 @@ import java.util.ArrayList;
 
   public static class KmeansMapper extends Mapper<Object, Text, Mean, Point> {
     
-    private ArrayList<Mean> means;
+    private final ArrayList<Mean> means = new ArrayList<Mean>();
+    private final Point point = new Point();
 
     @Override
     protected void setup(final Context context) throws IOException, InterruptedException {
-      means  = new ArrayList<Mean>(); 
       Configuration conf = context.getConfiguration();
       Path centroidsPath = new Path(conf.get("centroidsFilePath"));
       FileSystem fs = FileSystem.get(conf);
       BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(centroidsPath)));
-      int centroid_index = 0;
+      // int centroid_index = 0;
       try {
         String line = br.readLine();
         while (line != null){                     
-          Mean centroid = new Mean(getCoordinates(line), centroid_index++);
+          Mean centroid = new Mean(getCoordinates(line), getKey(line));
           means.add(centroid);
           line = br.readLine();
         }
@@ -44,7 +44,7 @@ import java.util.ArrayList;
 
   public void map(final Object key, final Text value, final Context context) throws IOException, InterruptedException{
     //this function finds and emits the index of the closest centroid for each point
-    final Point point = new Point(getCoordinates(value.toString())); 
+    point.set(getCoordinates(value.toString()), 1); 
     final Float min_distance = Float.MAX_VALUE;
     int min_index = 0;
     int current_index=0;
@@ -62,9 +62,14 @@ import java.util.ArrayList;
 
   private double[] getCoordinates(String textCoordinates){
     String[] stringCoordinates = textCoordinates.split(" ");
-    double[] doubleCoordinates = new double[stringCoordinates.length]; 
-    for (int i = 0; i < doubleCoordinates.length; i++)
+    double[] doubleCoordinates = new double[stringCoordinates.length -1]; 
+    for (int i = 1; i < doubleCoordinates.length; i++)
       doubleCoordinates[i] = Double.parseDouble(stringCoordinates[i]);   
     return doubleCoordinates;
   }
+
+  private String getKey(String line){
+    return line.split(" ")[0];
+  }
+
 }
