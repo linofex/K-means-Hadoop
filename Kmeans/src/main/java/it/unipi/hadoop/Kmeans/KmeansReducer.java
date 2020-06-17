@@ -1,4 +1,4 @@
-package Kmeans.src;
+package it.unipi.hadoop.Kmeans;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;

@@ -1,4 +1,4 @@
-package Kmeans.src;
+package it.unipi.hadoop.Kmeans;
 
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.Text;

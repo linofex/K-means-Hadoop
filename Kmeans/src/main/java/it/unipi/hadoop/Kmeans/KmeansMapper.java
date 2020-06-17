@@ -1,4 +1,4 @@
-package Kmeans.src;
+package it.unipi.hadoop.Kmeans;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
