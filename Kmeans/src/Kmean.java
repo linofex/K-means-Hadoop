@@ -64,6 +64,9 @@ public class Kmean{
         job.setInputFormatClass(TextInputFormat.class); 
         job.setOutputFormatClass(TextOutputFormat.class);
 
-        System.exit(job.waitForCompletion(true) ? 0 : 1); // da iterare
+        job.waitForCompletion(true);
+
+        System.out.println(job.getCounters().findCounter(CentroidCounter.NUMBER_OF_UNCONVERGED).getValue());
+
     }
 }
