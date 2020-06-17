@@ -3,6 +3,7 @@ package it.unipi.hadoop.Kmeans;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.fs.FileSystem;
 
@@ -30,12 +31,13 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
 
     @Override
     public void reduce(Mean key, Iterable<Point> points, Context context) throws IOException, InterruptedException {
-        Point value = (Point) points.next();
-        while(points.hasNext())
-            value.add((Point)points.next());  
+        Iterator<Point> pointIterator = points.iterator();
+        Point value = pointIterator.next();
+        while(pointIterator.hasNext())
+            value.add(pointIterator.next());  
         double[] coordinates = value.getCoordinates();
         int pointCounter = value.getPointCount();
-        for(index=0;index<coordinates.length;index++)
+        for(int index=0;index<coordinates.length;index++)
             coordinates[index]/=pointCounter;
         Mean newCentroid=new Mean(new Point(coordinates),key.getId());
         if(key.distance(newCentroid) >= threshold) 
@@ -53,7 +55,13 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
         FileSystem fs = FileSystem.get(conf);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fs.create(centroidsPath, true)));
         Iterator<Mean> meansIterator = centroidsList.iterator();
-        meansIterator.forEachRemaining(line -> {bw.write(line.getId() + " " +  line.toString());});
+        meansIterator.forEachRemaining(line -> {
+            try {
+		    	bw.write(line.getId() + " " +  line.toString());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }});
 
     }
 

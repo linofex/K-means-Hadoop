@@ -1,13 +1,19 @@
 package it.unipi.hadoop.Kmeans;
 
 import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.Text;
 import java.io.IOException;
 import java.io.DataInput;
 import java.io.DataOutput;
 
-public class Mean extends Point implements Writable, Comparable<Mean>{
+public class Mean extends Point implements WritableComparable<Mean>{
   private Text id; // Text should save byte wrt IntWritable
+
+  public Mean(){
+    //  super();
+    //  this.id.set("-1");
+  }
 
   public Mean(Point coordinates, String id){
     super(coordinates);
@@ -30,7 +36,7 @@ public class Mean extends Point implements Writable, Comparable<Mean>{
 
   }
   
-  @Override
+
   public void set(double[] point, int sum, String label){
     super.set(point, sum);
     id.set(label);
@@ -47,7 +53,7 @@ public class Mean extends Point implements Writable, Comparable<Mean>{
 
   @Override
   public int compareTo(Mean that){
-    return (this.id.compareTo(that.getId())); // Text compare works as ASCII
+    return (this.getId().compareTo(that.getId())); 
   }
 
 }

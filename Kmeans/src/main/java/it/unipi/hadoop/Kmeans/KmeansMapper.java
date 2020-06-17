@@ -1,22 +1,23 @@
 package it.unipi.hadoop.Kmeans;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 
-  public static class KmeansMapper extends Mapper<Object, Text, Mean, Point> {
+  public class KmeansMapper extends Mapper<Object, Text, Mean, Point> {
     
-    private final ArrayList<Mean> means = new ArrayList<Mean>();
+    private ArrayList<Mean> means = new ArrayList<>();
     private final Point point = new Point();
 
     @Override
@@ -33,7 +34,10 @@ import java.util.ArrayList;
           means.add(centroid);
           line = br.readLine();
         }
-      } 
+      }
+      catch (Exception e) {
+    
+      }
       finally {
         br.close();
       }
@@ -45,19 +49,20 @@ import java.util.ArrayList;
   public void map(final Object key, final Text value, final Context context) throws IOException, InterruptedException{
     //this function finds and emits the index of the closest centroid for each point
     point.set(getCoordinates(value.toString()), 1); 
-    final Float min_distance = Float.MAX_VALUE;
+    double min_distance = Double.MAX_VALUE;
     int min_index = 0;
     int current_index=0;
     Iterator<Mean> meanIterator=means.iterator();
     while(meanIterator.hasNext()){
-      final float distance = point.distance(meanIterator.next());
+      final double distance = point.distance(meanIterator.next());
       if(min_distance>distance){
         min_distance = distance;
         min_index = current_index;
       }
       current_index++;
     }
-    context.write(means.get(min_index), p); 
+
+    context.write(means.get(min_index), point); 
   }
 
   private double[] getCoordinates(String textCoordinates){

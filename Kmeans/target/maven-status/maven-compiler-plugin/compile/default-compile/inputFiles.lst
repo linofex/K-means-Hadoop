@@ -1,0 +1,7 @@
+/media/data/documents/university/Pisa/Cloud_Computing/K-means-Hadoop/Kmeans/src/main/java/it/unipi/hadoop/Kmeans/Mean.java
+/media/data/documents/university/Pisa/Cloud_Computing/K-means-Hadoop/Kmeans/src/main/java/it/unipi/hadoop/Kmeans/CentroidCounter.java
+/media/data/documents/university/Pisa/Cloud_Computing/K-means-Hadoop/Kmeans/src/main/java/it/unipi/hadoop/Kmeans/KmeansReducer.java
+/media/data/documents/university/Pisa/Cloud_Computing/K-means-Hadoop/Kmeans/src/main/java/it/unipi/hadoop/Kmeans/KmeansMapper.java
+/media/data/documents/university/Pisa/Cloud_Computing/K-means-Hadoop/Kmeans/src/main/java/it/unipi/hadoop/Kmeans/KmeansCombiner.java
+/media/data/documents/university/Pisa/Cloud_Computing/K-means-Hadoop/Kmeans/src/main/java/it/unipi/hadoop/Kmeans/Point.java
+/media/data/documents/university/Pisa/Cloud_Computing/K-means-Hadoop/Kmeans/src/main/java/it/unipi/hadoop/Kmeans/Kmean.java

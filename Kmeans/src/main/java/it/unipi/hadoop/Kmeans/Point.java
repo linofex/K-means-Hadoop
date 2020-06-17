@@ -4,19 +4,19 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import org.apache.hadoop.io.Writable;
-import org.apache.commons.math3.ml.distance;
 
-import java.util.List;
+// import java.util.List;
 
 import org.apache.hadoop.io.ArrayPrimitiveWritable;
+import org.apache.hadoop.io.IntWritable;
 
 public class Point implements Writable {
   private ArrayPrimitiveWritable coordinates; // ArrayPrimitiveWritable manages int[], double[] etc
   private IntWritable pointCount; // to save the number of additions of point
   
   public Point(){
-    vector = new ArrayPrimitiveWritable();
-    number = new IntWritable(0);
+    coordinates = new ArrayPrimitiveWritable();
+    pointCount = new IntWritable(0);
   }
 
   // point count starts from 1
@@ -37,7 +37,7 @@ public class Point implements Writable {
   }
 
   public double[] getCoordinates() {
-    return coordinates.get();
+    return (double[]) coordinates.get();
   }
   
   public int getPointCount() {
