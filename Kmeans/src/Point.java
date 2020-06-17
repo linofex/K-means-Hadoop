@@ -14,10 +14,10 @@ public class Point implements Writable {
   private ArrayPrimitiveWritable coordinates; // ArrayPrimitiveWritable manages int[], double[] etc
   private IntWritable pointCount; // to save the number of additions of point
   
-  // public Point(){
-  //   vector = new ArrayPrimitiveWritable();
-  //   number = new IntWritable(0);
-  // }
+  public Point(){
+    vector = new ArrayPrimitiveWritable();
+    number = new IntWritable(0);
+  }
 
   // point count starts from 1
   public Point(double[] _coordinates) {
@@ -69,7 +69,7 @@ public class Point implements Writable {
 
   }
 
-  public void add(Point point){ //excemption
+  public void add(Point point){
     double[] argPoint = point.getCoordinates();
     this.add(argPoint, point.getPointCount());
   }
@@ -82,9 +82,6 @@ public class Point implements Writable {
     if(thisPoint.length != thatPoint.length){
       //manage it
     }
-    // euclidian distance  A and B = Square root( summing up (A[i] - B[i])^2)
-
-    //or EuclideanDistance.
 
     for (int i = 0; i < thatPoint.length; i++) {
       sum += Math.pow(thatPoint[i] - thisPoint[i], 2);
