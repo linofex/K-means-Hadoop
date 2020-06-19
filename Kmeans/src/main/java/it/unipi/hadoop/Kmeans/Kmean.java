@@ -36,7 +36,6 @@ public class Kmean{
         conf.setStrings("centroidsFilePath", "centroids.txt");
 
 
-
         Job job = Job.getInstance(conf, "Kmeans");
         // job.setJarByClass(job.getClass()); 
         job.setJarByClass(Kmean.class); 

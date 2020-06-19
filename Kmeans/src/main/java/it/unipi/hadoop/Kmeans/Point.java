@@ -16,13 +16,13 @@ public class Point implements Writable {
   
   public Point(){
     coordinates = new ArrayPrimitiveWritable();
-    pointCount = new IntWritable(0);
+    pointCount = new IntWritable();
   }
 
   // point count starts from 1
   public Point(double[] _coordinates) {
     this.coordinates = new ArrayPrimitiveWritable(_coordinates);
-    this.pointCount.set(1);
+    this.pointCount = new IntWritable(1);
   }
 
   public Point(double[] _coordinates, int sum) {

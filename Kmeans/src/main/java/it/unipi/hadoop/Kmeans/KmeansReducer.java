@@ -31,6 +31,7 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
 
     @Override
     public void reduce(Mean key, Iterable<Point> points, Context context) throws IOException, InterruptedException {
+        System.out.println("DCr: "+ key.toString());
         Iterator<Point> pointIterator = points.iterator();
         Point value = pointIterator.next();
         while(pointIterator.hasNext())
@@ -39,7 +40,7 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
         int pointCounter = value.getPointCount();
         for(int index=0;index<coordinates.length;index++)
             coordinates[index]/=pointCounter;
-        Mean newCentroid=new Mean(new Point(coordinates),key.getId());
+        Mean newCentroid=new Mean(coordinates,key.getId());
         if(key.distance(newCentroid) >= threshold) 
             context.getCounter(CentroidCounter.NUMBER_OF_UNCONVERGED).increment(1);
         centroidsList.add(newCentroid);

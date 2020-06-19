@@ -17,7 +17,7 @@ import java.util.Iterator;
 
   public class KmeansMapper extends Mapper<Object, Text, Mean, Point> {
     
-    private ArrayList<Mean> means = new ArrayList<>();
+    private final ArrayList<Mean> means = new ArrayList<Mean>();
     private final Point point = new Point();
 
     @Override
@@ -26,19 +26,28 @@ import java.util.Iterator;
       Path centroidsPath = new Path(conf.get("centroidsFilePath"));
       FileSystem fs = FileSystem.get(conf);
       BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(centroidsPath)));
+      
       // int centroid_index = 0;
       try {
         String line = br.readLine();
-        while (line != null){                     
+        System.out.println("carattere letto: " + line);
+        System.out.println("bool: " + (line!= null));
+        
+        while (line != null){
+          System.out.println("key: "+ getKey(line));
+          double[] e = getCoordinates(line);
+          for (int i = 0 ; i < e.length ; ++i){
+            System.out.println("coord: "+ e[i]);
+          }                     
           Mean centroid = new Mean(getCoordinates(line), getKey(line));
+          System.out.println("coord mean: "+ centroid.toString());
           means.add(centroid);
-          line = br.readLine();
+          line = br.readLine();         
         }
       }
-      catch (Exception e) {
-    
-      }
+      
       finally {
+        System.out.println("setup len: "+ means.size());
         br.close();
       }
       //bisogna vedere se i centroidi sono letti all'inizializzazione o no
@@ -48,7 +57,7 @@ import java.util.Iterator;
 
   public void map(final Object key, final Text value, final Context context) throws IOException, InterruptedException{
     //this function finds and emits the index of the closest centroid for each point
-    point.set(getCoordinates(value.toString()), 1); 
+    point.set(getCoordinatesPoint(value.toString()), 1); 
     double min_distance = Double.MAX_VALUE;
     int min_index = 0;
     int current_index=0;
@@ -62,16 +71,26 @@ import java.util.Iterator;
       current_index++;
     }
 
+    System.out.println("mean: " + means.get(min_index).getId());
     context.write(means.get(min_index), point); 
   }
 
   private double[] getCoordinates(String textCoordinates){
     String[] stringCoordinates = textCoordinates.split(" ");
     double[] doubleCoordinates = new double[stringCoordinates.length -1]; 
-    for (int i = 1; i < doubleCoordinates.length; i++)
+    for (int i = 1; i < stringCoordinates.length; i++)
+      doubleCoordinates[i-1] = Double.parseDouble(stringCoordinates[i]);   
+    return doubleCoordinates;
+  }
+
+  private double[] getCoordinatesPoint(String textCoordinates){
+    String[] stringCoordinates = textCoordinates.split(" ");
+    double[] doubleCoordinates = new double[stringCoordinates.length]; 
+    for (int i = 0; i < doubleCoordinates.length; i++)
       doubleCoordinates[i] = Double.parseDouble(stringCoordinates[i]);   
     return doubleCoordinates;
   }
+
 
   private String getKey(String line){
     return line.split(" ")[0];

@@ -11,18 +11,18 @@ public class Mean extends Point implements WritableComparable<Mean>{
   private Text id; // Text should save byte wrt IntWritable
 
   public Mean(){
-    //  super();
-    //  this.id.set("-1");
+   super();
+   this.id = new Text();
   }
 
   public Mean(Point coordinates, String id){
     super(coordinates);
-    this.id.set(id);
+    this.id = new Text(id);
   }
 
   public Mean(double[] coordinates, String id){
     super(coordinates);
-    this.id.set(id);
+    this.id = new Text(id);
   }
 
   public String getId(){
@@ -48,7 +48,6 @@ public class Mean extends Point implements WritableComparable<Mean>{
   public void readFields(DataInput in) throws IOException {
     super.readFields(in);
     this.id.readFields(in);
-
   }
 
   @Override
