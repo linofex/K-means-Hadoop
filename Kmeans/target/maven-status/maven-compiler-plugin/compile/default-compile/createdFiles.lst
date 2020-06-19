@@ -1,0 +1,5 @@
+it/unipi/hadoop/Kmeans/KmeansReducer.class
+it/unipi/hadoop/Kmeans/KmeansMapper.class
+it/unipi/hadoop/Kmeans/KmeansCombiner.class
+it/unipi/hadoop/Kmeans/Mean.class
+it/unipi/hadoop/Kmeans/Point.class
