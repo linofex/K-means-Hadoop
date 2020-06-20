@@ -3,3 +3,4 @@ Kmeans/target/
 *.jar
 Kmeans/.settings/
 .classpath
+Kmeans/target/classes/it/unipi/hadoop/Kmeans/KmeansCombiner.class
