@@ -72,7 +72,7 @@ import java.util.Iterator;
       current_index++;
     }
 
-    // System.out.println("mean: " + means.get(min_index).getId());
+    // System.out.println("point: " + point.toString() + " mean: " + means.get(min_index).getId());
     context.write(means.get(min_index), point); 
   }
 

@@ -32,15 +32,21 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
     @Override
     public void reduce(Mean key, Iterable<Point> points, Context context) throws IOException, InterruptedException {
         System.out.println("reducer: "+ key.getId());
-        Iterator<Point> pointIterator = points.iterator();
-        Point value = pointIterator.next();
-        while(pointIterator.hasNext())
-            value.add(pointIterator.next());  
+        Point value = null;
+        for (Point point : points) {
+            if (value == null) {
+                value = new Point(point);
+            } 
+            else {
+                value.add(point);
+            }
+        }
+          
         double[] coordinates = value.getCoordinates();
         int pointCounter = value.getPointCount();
         for(int index=0;index<coordinates.length;index++)
             coordinates[index]/=pointCounter;
-        Mean newCentroid=new Mean(coordinates,key.getId());
+        Mean newCentroid = new Mean(coordinates,key.getId());
         if(key.distance(newCentroid) >= threshold) 
             context.getCounter(CentroidCounter.NUMBER_OF_UNCONVERGED).increment(1);
         centroidsList.add(newCentroid);
@@ -56,14 +62,14 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
         FileSystem fs = FileSystem.get(conf);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fs.create(centroidsPath, true)));
         Iterator<Mean> meansIterator = centroidsList.iterator();
+        System.out.println("cleanup");
         meansIterator.forEachRemaining(line -> {
             try {
-		    	bw.write(line.getId() + " " +  line.toString());
+                bw.write(line.getId() + " " + line.toString() + "\n") ;
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                 e.printStackTrace();
             }});
-
+        bw.close();
     }
 
 

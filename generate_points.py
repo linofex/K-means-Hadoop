@@ -92,18 +92,18 @@ def generateTimestamp():
 if __name__ == "__main__":
   # generate timestamp to link different files
   timestamp = generateTimestamp()
-  
+  timestamp = ""
   inputPath = './inputs/'
   desiredOutputPath = './des_output/'
   meansPath= './initial_means/'
   
-  STD = 2 # standard deviation between points in a cluster
+  STD = 0.5 # standard deviation between points in a cluster
 
   clusters, dimension, pointNumber = checkInput(sys.argv[1:])
 
-  InputFileName = '_input_d=%d_n=%d_k=%d.txt' % (dimension, pointNumber, clusters)
-  ClusterFileName = '_cluster_d=%d_k=%d.txt' % (dimension, clusters)
-  MeansFileName = '_initial_means_k=%d.txt' % (clusters)
+  InputFileName = 'input.txt'
+  ClusterFileName = 'des.txt'
+  MeansFileName = 'initial.txt'
   
   # dataset genaration
   points = generatePoints(clusters, dimension, pointNumber)

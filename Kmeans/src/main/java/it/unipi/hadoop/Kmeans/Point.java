@@ -41,21 +41,9 @@ public class Point implements Writable {
   }
   
   public int getPointCount() {
-    return pointCount.get();
+    return (int) pointCount.get();
   }
 
-  public void add(double[] point){
-    double[] thisPoint = this.getCoordinates();
-    if(thisPoint.length != point.length){
-      //manage it
-    }
-    for (int i = 0; i < point.length; i++) {
-      thisPoint[i] += point[i];
-    }
-    this.coordinates.set(thisPoint);
-    this.pointCount.set(this.getPointCount() + 1);
-
-  }
 
   public void set(double[] point, int sum){
     this.coordinates.set(point);
@@ -63,9 +51,27 @@ public class Point implements Writable {
 
   }
   
+
+  
   public void add(double[] point, int sum){
-    this.add(point);
-    this.pointCount.set(this.getPointCount() + sum - 1); //-1 since previous add adds 1. 
+    double[] thisPoint = this.getCoordinates();
+    if(thisPoint.length != point.length){
+      //manage it
+    }
+    System.out.println("this coord1: " + this.toString());
+    for (int i = 0; i < point.length; i++) {
+      thisPoint[i] += point[i];
+    }
+    System.out.println("this coord2: " + this.toString());
+    System.out.println("that coord: " + point[0] + " " + point[1] + " " + point[2] ); 
+    // this.coordinates.set(thisPoint);
+
+    System.out.println("after coord double: " + thisPoint[0] + " " + thisPoint[1] + " " + thisPoint[2]);
+    
+    System.out.println("after coord: " + this.toString());
+    System.out.println("sum: " + sum);
+    System.out.println("get: " + this.getPointCount());
+    this.pointCount.set(this.getPointCount() + sum);
 
   }
 
