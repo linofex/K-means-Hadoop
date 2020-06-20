@@ -9,7 +9,7 @@ public class KmeansCombiner extends Reducer<Mean, Point, Mean , Point> { // per 
     @Override
     protected void reduce(Mean key, Iterable<Point> points, Context context) throws IOException, InterruptedException {
         // devo inizializzare il Point value
-        System.out.println("DC: "+ key.toString());
+        System.out.println("Combiner: "+ key.toString());
         Iterator<Point> pointsIterator=points.iterator();
         Point value= pointsIterator.next();
         while(pointsIterator.hasNext())

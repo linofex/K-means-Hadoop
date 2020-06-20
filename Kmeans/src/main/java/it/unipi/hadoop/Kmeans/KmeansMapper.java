@@ -22,6 +22,7 @@ import java.util.Iterator;
 
     @Override
     protected void setup(final Context context) throws IOException, InterruptedException {
+      System.out.println("setup len0: "+ means.size());
       Configuration conf = context.getConfiguration();
       Path centroidsPath = new Path(conf.get("centroidsFilePath"));
       FileSystem fs = FileSystem.get(conf);
@@ -47,7 +48,7 @@ import java.util.Iterator;
       }
       
       finally {
-        System.out.println("setup len: "+ means.size());
+        System.out.println("setup len1: "+ means.size());
         br.close();
       }
       //bisogna vedere se i centroidi sono letti all'inizializzazione o no
@@ -71,7 +72,7 @@ import java.util.Iterator;
       current_index++;
     }
 
-    System.out.println("mean: " + means.get(min_index).getId());
+    // System.out.println("mean: " + means.get(min_index).getId());
     context.write(means.get(min_index), point); 
   }
 

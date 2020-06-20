@@ -31,7 +31,7 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
 
     @Override
     public void reduce(Mean key, Iterable<Point> points, Context context) throws IOException, InterruptedException {
-        System.out.println("DCr: "+ key.toString());
+        System.out.println("reducer: "+ key.getId());
         Iterator<Point> pointIterator = points.iterator();
         Point value = pointIterator.next();
         while(pointIterator.hasNext())
