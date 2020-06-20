@@ -1,4 +1,5 @@
-K-means-Hadoop/Kmeans/target/
+Kmeans/target/
+*.class
 *.jar
 Kmeans/.settings/
 .classpath
