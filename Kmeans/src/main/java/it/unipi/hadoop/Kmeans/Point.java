@@ -54,7 +54,7 @@ public class Point implements Writable {
 
   
   public void add(double[] point, int sum){
-    double[] thisPoint = this.getCoordinates();
+    double[] thisPoint = this.getCoordinates(); //ref
     if(thisPoint.length != point.length){
       //manage it
     }
@@ -62,15 +62,6 @@ public class Point implements Writable {
     for (int i = 0; i < point.length; i++) {
       thisPoint[i] += point[i];
     }
-    System.out.println("this coord2: " + this.toString());
-    System.out.println("that coord: " + point[0] + " " + point[1] + " " + point[2] ); 
-    // this.coordinates.set(thisPoint);
-
-    System.out.println("after coord double: " + thisPoint[0] + " " + thisPoint[1] + " " + thisPoint[2]);
-    
-    System.out.println("after coord: " + this.toString());
-    System.out.println("sum: " + sum);
-    System.out.println("get: " + this.getPointCount());
     this.pointCount.set(this.getPointCount() + sum);
 
   }
