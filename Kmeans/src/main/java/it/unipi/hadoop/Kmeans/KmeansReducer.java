@@ -15,12 +15,12 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-
-
-public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
+public class KmeansReducer extends Reducer<Mean, Point, Text, Text> {
     private double threshold;
     private ArrayList<Mean> centroidsList;
+    private Text centroidOutputId = new Text();
     private Text centroidOutput = new Text();
+    
 
     @Override
     protected void setup(Context context) {
@@ -31,47 +31,42 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, NullWritable> {
 
     @Override
     public void reduce(Mean key, Iterable<Point> points, Context context) throws IOException, InterruptedException {
-        System.out.println("reducer: "+ key.getId());
-        Point value = null;
-        for (Point point : points) {
-            if (value == null) {
-                value = new Point(point);
-            } 
-            else {
-                value.add(point);
-            }
-        }
-          
-        double[] coordinates = value.getCoordinates();
-        int pointCounter = value.getPointCount();
+
+        Iterator<Point> pointsIterator=points.iterator();
+        Point pointsSum= new Point(pointsIterator.next());
+        pointsIterator.forEachRemaining(point -> {pointsSum.add(point);});
+        double[] coordinates = pointsSum.getCoordinates();
+        int pointCounter = pointsSum.getPointCount();
         for(int index=0;index<coordinates.length;index++)
             coordinates[index]/=pointCounter;
         Mean newCentroid = new Mean(coordinates,key.getId());
         if(key.distance(newCentroid) >= threshold) 
             context.getCounter(CentroidCounter.NUMBER_OF_UNCONVERGED).increment(1);
         centroidsList.add(newCentroid);
-
+        
+        centroidOutputId.set(newCentroid.getId());
         centroidOutput.set(newCentroid.toString());
-        context.write(centroidOutput, NullWritable.get());
+        context.write(centroidOutputId, centroidOutput);
     }
 
     @Override
     public void cleanup(Context context) throws IOException, InterruptedException {
-        Configuration conf = context.getConfiguration();
-        Path centroidsPath = new Path(conf.get("centroidsFilePath"));
-        FileSystem fs = FileSystem.get(conf);
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fs.create(centroidsPath, true)));
-        Iterator<Mean> meansIterator = centroidsList.iterator();
-        System.out.println("cleanup");
-        meansIterator.forEachRemaining(line -> {
-            try {
-                bw.write(line.getId() + " " + line.toString() + "\n") ;
-            } catch (IOException e) {
-                 e.printStackTrace();
-            }});
-        bw.close();
+    //     Configuration conf = context.getConfiguration();
+    //     Path centroidsPath = new Path(conf.get("centroidsFilePath"));
+    //     FileSystem fs = FileSystem.get(conf);
+        
+    //     OutputStreamWriter os = (fs.exists(centroidsPath))? new OutputStreamWriter(fs.append(centroidsPath)) 
+    //                                                         : new OutputStreamWriter(fs.create(centroidsPath, true));
+    //     BufferedWriter bw =  new BufferedWriter(os);
+
+    //     Iterator<Mean> meansIterator = centroidsList.iterator();
+    //     System.out.println("cleanup");
+    //     meansIterator.forEachRemaining(line -> {
+    //         try {
+    //             bw.write(line.getId() + "\t" + line.toString() + "\n") ;
+    //         } catch (IOException e) {
+    //             e.printStackTrace();
+    //         }});
+    //     bw.close();
     }
-
-
-
 }
