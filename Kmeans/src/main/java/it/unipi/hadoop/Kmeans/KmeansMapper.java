@@ -22,37 +22,27 @@ import java.util.Iterator;
 
     @Override
     protected void setup(final Context context) throws IOException, InterruptedException {
-      System.out.println("setup len0: "+ means.size());
       Configuration conf = context.getConfiguration();
       Path centroidsPath = new Path(conf.get("centroidsFilePath"));
       FileSystem fs = FileSystem.get(conf);
       BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(centroidsPath)));
-      
-      // int centroid_index = 0;
+
       try {
         String line = br.readLine();
-        System.out.println("carattere letto: " + line);
-        System.out.println("bool: " + (line!= null));
-        
         while (line != null){
-          System.out.println("key: "+ getKey(line));
-          double[] e = getCoordinates(line);
-          for (int i = 0 ; i < e.length ; ++i){
-            System.out.println("coord: "+ e[i]);
-          }                     
-          Mean centroid = new Mean(getCoordinates(line), getKey(line));
-          System.out.println("coord mean: "+ centroid.toString());
+          double[] mean = getCoordinatesMean(line);                  
+          Mean centroid = new Mean(mean, getKey(line));
           means.add(centroid);
           line = br.readLine();         
         }
       }
       
       finally {
-        System.out.println("setup len1: "+ means.size());
         br.close();
+        if(fs.exists(centroidsPath)) // if more mapper
+          fs.delete(centroidsPath, true); // delete centroids path 
       }
-      //bisogna vedere se i centroidi sono letti all'inizializzazione o no
-      // se inizializzazione, file unico, altrimenti più file
+      
     }
       
 
@@ -71,30 +61,28 @@ import java.util.Iterator;
       }
       current_index++;
     }
-
-    // System.out.println("point: " + point.toString() + " mean: " + means.get(min_index).getId());
     context.write(means.get(min_index), point); 
   }
 
-  private double[] getCoordinates(String textCoordinates){
-    String[] stringCoordinates = textCoordinates.split(" ");
-    double[] doubleCoordinates = new double[stringCoordinates.length -1]; 
-    for (int i = 1; i < stringCoordinates.length; i++)
-      doubleCoordinates[i-1] = Double.parseDouble(stringCoordinates[i]);   
-    return doubleCoordinates;
+
+  private double[] getCoordinates(String[] textCoordinates, int startIndex){
+    double[] doubleCoordinates = new double[textCoordinates.length - startIndex]; 
+    for (int i = startIndex; i < textCoordinates.length; i++)
+      doubleCoordinates[i - startIndex] = Double.parseDouble(textCoordinates[i]);   
+    return doubleCoordinates;  
+  }
+  private double[] getCoordinatesMean(String textCoordinates){
+    String[] stringCoordinates = textCoordinates.split("\t");
+    return getCoordinates(stringCoordinates[1].split(" "), 0);
   }
 
   private double[] getCoordinatesPoint(String textCoordinates){
     String[] stringCoordinates = textCoordinates.split(" ");
-    double[] doubleCoordinates = new double[stringCoordinates.length]; 
-    for (int i = 0; i < doubleCoordinates.length; i++)
-      doubleCoordinates[i] = Double.parseDouble(stringCoordinates[i]);   
-    return doubleCoordinates;
+    return getCoordinates(stringCoordinates, 0);
   }
 
-
   private String getKey(String line){
-    return line.split(" ")[0];
+    return line.split("\t")[0];
   }
 
 }
