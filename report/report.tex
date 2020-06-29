@@ -1,0 +1,111 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[italian]{babel}
+\usepackage{wrapfig}
+\usepackage{hyperref}
+\usepackage{mathtools}
+\usepackage{subcaption}
+\usepackage{siunitx}
+\usepackage{import}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[bottom]{footmisc}
+\usepackage{float}
+\usepackage{soul}
+%\usepackage[hyphenbreaks]{breakurl}
+%\usepackage[font=small,labelfont=bf,labelsep=space]{caption}
+%\captionsetup{%
+%    	figurename=Fig.,
+%    	tablename=Tab.
+%}
+
+
+%\renewcommand{\labelenumii}{\theenumii}
+%\renewcommand{\theenumii}{\theenumi.\arabic{enumii}.}
+%\setlength{\leftmarginii}{1.8ex}
+%
+%
+%\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\lstset{
+%	frame=true,
+	language=Python,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+%	numbers=yes,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{blue},
+%	stringstyle=\color{mauve},
+	breaklines=true,
+	%breakatwhitespace=true,
+	tabsize=4, 
+}
+
+
+\setcounter{secnumdepth}{5}
+\setcounter{secnumdepth}{5}
+
+\graphicspath{ {./images/} }
+\title{\textbf{Cloud Computing}\\Computer Engineering\\ Computer Systems and Networks}
+\author{A.Noferi, F.Mione, L.Lossi, F.Fornaini}
+\date{2020}
+\linespread{1.2}
+
+\begin{document}
+		%\figura[width]{file_name}{caption}	
+	\newcommand{\figura}[3][0.7]{
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=#1\textwidth]{#2}
+			\caption{#3}
+			\label{fig:#2}
+		\end{figure}
+		\noindent
+	}
+	%\wfigure[position_r_l]{width}{file_name}{caption}
+	\newcommand{\wfigure}[5]{
+		\begin{wrapfigure}[#5]{#1}{#2\textwidth}
+			\vspace{-0.8 cm}
+			\begin{center}
+				\includegraphics[width=#2\textwidth]{#3}
+			\end{center}
+			\caption{#4}
+			\label{fig:#3}
+		\end{wrapfigure}
+		\noindent
+	}
+	%\duefigure{file_name_1}{caption_1}{file_name_2}{caption_2}
+	\newcommand{\duefigure}[4]{
+		\begin{figure}[H]
+			\centering
+			\begin{minipage}{.5\textwidth}
+				\centering
+				\includegraphics[width=.7\linewidth]{#1.png}
+				\caption{#2}
+				\label{fig:#1}
+			\end{minipage}%
+			\begin{minipage}{.5\textwidth}
+				\centering
+				\includegraphics[width=.7\linewidth]{#3.png}
+				\caption{#4}
+				\label{fig:#3}
+			\end{minipage}
+		\end{figure}
+		\noindent
+		
+	}
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+\end{document}
