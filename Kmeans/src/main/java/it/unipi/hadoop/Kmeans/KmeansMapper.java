@@ -39,8 +39,6 @@ import java.util.Iterator;
       
       finally {
         br.close();
-        if(fs.exists(centroidsPath)) // if more mapper
-          fs.delete(centroidsPath, true); // delete centroids path 
       }
       
     }
@@ -53,8 +51,9 @@ import java.util.Iterator;
     int min_index = 0;
     int current_index=0;
     Iterator<Mean> meanIterator=means.iterator();
+    double distance = 0;
     while(meanIterator.hasNext()){
-      final double distance = point.distance(meanIterator.next());
+      distance = point.distance(meanIterator.next());
       if(min_distance>distance){
         min_distance = distance;
         min_index = current_index;
