@@ -17,21 +17,18 @@ import java.util.Iterator;
 
 public class KmeansReducer extends Reducer<Mean, Point, Text, Text> {
     private double threshold;
-    private ArrayList<Mean> centroidsList;
-    private Text centroidOutputId = new Text();
-    private Text centroidOutput = new Text();
+    private final Text centroidOutputId = new Text();
+    private final Text centroidOutput = new Text();
     
 
     @Override
     protected void setup(Context context) {
         Configuration conf = context.getConfiguration();
         threshold = conf.getDouble("threshold", 0.);
-        centroidsList = new ArrayList<Mean>();
     }
 
     @Override
     public void reduce(Mean key, Iterable<Point> points, Context context) throws IOException, InterruptedException {
-
         Iterator<Point> pointsIterator=points.iterator();
         Point pointsSum= new Point(pointsIterator.next());
         pointsIterator.forEachRemaining(point -> {pointsSum.add(point);});
@@ -42,7 +39,6 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, Text> {
         Mean newCentroid = new Mean(coordinates,key.getId());
         if(key.distance(newCentroid) >= threshold) 
             context.getCounter(CentroidCounter.NUMBER_OF_UNCONVERGED).increment(1);
-        centroidsList.add(newCentroid);
         
         centroidOutputId.set(newCentroid.getId());
         centroidOutput.set(newCentroid.toString());
@@ -51,22 +47,6 @@ public class KmeansReducer extends Reducer<Mean, Point, Text, Text> {
 
     @Override
     public void cleanup(Context context) throws IOException, InterruptedException {
-    //     Configuration conf = context.getConfiguration();
-    //     Path centroidsPath = new Path(conf.get("centroidsFilePath"));
-    //     FileSystem fs = FileSystem.get(conf);
         
-    //     OutputStreamWriter os = (fs.exists(centroidsPath))? new OutputStreamWriter(fs.append(centroidsPath)) 
-    //                                                         : new OutputStreamWriter(fs.create(centroidsPath, true));
-    //     BufferedWriter bw =  new BufferedWriter(os);
-
-    //     Iterator<Mean> meansIterator = centroidsList.iterator();
-    //     System.out.println("cleanup");
-    //     meansIterator.forEachRemaining(line -> {
-    //         try {
-    //             bw.write(line.getId() + "\t" + line.toString() + "\n") ;
-    //         } catch (IOException e) {
-    //             e.printStackTrace();
-    //         }});
-    //     bw.close();
     }
 }
