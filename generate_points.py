@@ -48,6 +48,15 @@ def savePoints(fileName, points):
         file.write(" ".join(str(round(i, 3)) for i in point))
         file.write('\n')
 
+def saveInitialPoints(fileName, points):
+  i = 1
+  with open(fileName, "w") as file: 
+    for point in points:
+      file.write(str(i)+"\t")
+      file.write(" ".join(str(round(i, 3)) for i in point))
+      file.write('\n')
+      i += 1
+
 def plotPoints(points, centers, initialMeans):
   if len(points[0]) == 3:
     ax = plt.axes(projection='3d')
@@ -116,7 +125,7 @@ if __name__ == "__main__":
 
   savePoints(inputPath + timestamp + InputFileName, points)
   savePoints(desiredOutputPath + timestamp + ClusterFileName, centers)
-  savePoints(meansPath + timestamp + MeansFileName, initialMeans)
+  saveInitialPoints(meansPath + timestamp + MeansFileName, initialMeans)
   
   plotPoints(points, centers, initialMeans)
 
