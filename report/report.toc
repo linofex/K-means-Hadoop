@@ -1,5 +1,5 @@
-\babel@toc {italian}{}
-\babel@toc {italian}{}
+\select@language {italian}
+\select@language {italian}
 \contentsline {section}{\numberline {1}Introduction}{1}{section.1}
 \contentsline {subsection}{\numberline {1.1}Dataset Generation}{1}{subsection.1.1}
 \contentsline {subsection}{\numberline {1.2}I/O organization}{1}{subsection.1.2}
@@ -27,4 +27,4 @@
 \contentsline {section}{\numberline {4}Experimental Results}{7}{section.4}
 \contentsline {subsection}{\numberline {4.1}Testing on datasets}{7}{subsection.4.1}
 \contentsline {subsection}{\numberline {4.2}Comparazione sui tempi di esecuzione delle due implementazione}{7}{subsection.4.2}
-\contentsline {subsubsection}{\numberline {4.2.1}Osservazioni}{7}{subsubsection.4.2.1}
+\contentsline {subsubsection}{\numberline {4.2.1}Osservazioni}{8}{subsubsection.4.2.1}

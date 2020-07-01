@@ -58,7 +58,7 @@
 \graphicspath{ {./images/} }
 \author{Alessandro Noferi, Francesco Fornaini, Francesco Mione, Leonardo Lossi}
 \title{
-	%\includegraphics[width=3in]{unipi}
+	\includegraphics[width=3in]{unipi}\\
 	\textbf{MapReduce K-means Algorithm}\\{Cloud Computing: Big Data Processing}}
 \begin{document}
 \maketitle
@@ -82,7 +82,8 @@ This section is a small introduction in which we show how we have produced the s
 In Section \ref{sez:hadoop} and \ref{sez:spark} we will describe respectively the Hadoop and the Spark Implementations with our design choices.\\
 Finally in \ref{sez:results} we will compare the performances of our two implementations from the CPU-time point of view.
 \subsection{Dataset Generation}\label{sez:data}
-To create the data sets to test both implementations, we have written a small script that uses the Python library sklearn.datasets. It allowed us to generate ad hoc clustered points with a custom standard deviation (thought the function make blobs). In particular, we selected the number of points, the dimension and the number of clusters, and the script creates two text files, a first on with all the points and a second one with the initial means. The latter has been calculated in this step in order to make fair comparisons between the two implementations setting the same starting points.
+To create the data sets to test both implementations, we have written a small script that uses the Python library sklearn.datasets. It allowed us to generate ad hoc clustered points with a custom standard deviation (thought the function make blobs). In particular, we selected the number of points, the dimension and the number of clusters, and the script creates three text files, a first on with all the points and a second one with the initial means. The latter has been calculated in this step in order to make fair comparisons between the two implementations setting the same starting points.\\
+The third file, instead, are saved the optimal centroids calculated by the \texttt{ sklearn.cluster} \textit{Python} library, that provides an implementation of the K-means algorithm. This file is useful because it allowed us to compare these results with those found by our implementation.
 \\\\
 Since the goal of this project was not to develop an optimum algorithm in terms of accuracy, we decided two select the initial mean points randomly from the total number of data points.
 \subsection{I/O organization}
@@ -212,7 +213,7 @@ Once the input file and the eventual file of the initial centroid vector have be
 \texttt{spark-submit kmeans.py -k <clusters or file> -i <input\_file> -o <output\_file> \\-m <max\_iter> -t <threshold>}
 \newpage
 \section{Experimental Results} \label{sez:results}
-In this part we will discuss the test and validation phase of our two implementation and we will show a fair comparison between the Hadoop and the Spark implementations.\\
+In this part we will discuss the test and validation phase of our two implementations and we will show a fair comparison between the Hadoop and the Spark implementations.\\
 "Fair comparison" means that the executions of the algorithm used for this comparison have been fed with the same input file, the same initial vector of centroids, the same threshold for the second stopping criterion and the same maximum number of iterations.
 \subsection{Testing on datasets}
 The first validation task we have performed has been the one of comparing the centroids configurations produced by our two implementations. \\
@@ -234,10 +235,20 @@ During this comparison phase we have tested our implementations combining the fo
 \end{table}
 \noindent The centroids produced by the two implementation are always the same and they have been produced in the same number of iterations.\\
 So we proceeded in comparing them with some well-known results produced by the Python script to produce the dataset introduced in subsection \ref{sez:data}.\\
-The results are not exactly the same, in most of the cases there is a centroid that is not alingned with the desired one produced by the Python script: this is simply because of the initial set of centroids from which the algorithm starts.\\
-In any case we can consider our results accettable, the cause of the difference is simply the randomicity in the choose of the initial centroids set which lead us to a suboptimal solution of the clustering problem.
+The Figure \ref{fig:plot} shows the result of the K-means algorithm we implemented in a simplified case where the clusters are quite separate:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = 0.48\textwidth]{results}
+	\caption{K-means algorithm with 1000 points and K = 5}
+	\label{fig:plot}
+\end{figure}
+\noindent
+As we can see the calculated centroids (the red dots) overlap the desired ones calculated by script.\\ 
+Anyway, the results were not exactly the same, in most of the cases there was a centroid that was not alingned with the desired one produced by the Python script: this is simply because of the initial set of centroids from which the algorithm starts.\\
+In any case we can considered our results accettable, the cause of the difference is simply the randomicity in the choose of the initial centroids set which lead us to a suboptimal solution of the clustering problem.
+
 \subsection{Comparazione sui tempi di esecuzione delle due implementazione}
-Tabella e Grafici??
+Finally, we made a comparison, in terms on time elapsed to run the algorithm, between both implementations developed.\\
 \subsubsection{Osservazioni}\label{sez:per}
 discorso dello spreco di tempo della sortByKey dove però per fare una comparazione fair abbiamo deciso di metterla nel codice spark anche se in realtà  non necessaria
 \end{document}
