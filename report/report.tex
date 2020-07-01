@@ -80,19 +80,19 @@
 The aim of this project is to design and develop two MapReduce implementations of the \textit{K-Means Clustering Algorithm} using Hadoop and Spark Frameworks.\\
 This section is a small introduction in which we show how we have produced the synthetic datasets of points we have used during the development and the testing of our two implementations.\\
 In Section \ref{sez:hadoop} and \ref{sez:spark} we will describe respectively the Hadoop and the Spark Implementations with our design choices.\\
-Finally in \ref{sez:results} we will compare the performances of our two implementations from the CPU-time point of view.
+Finally in \ref{sez:results} we will compare the performances of our two implementations from the execution time point of view.
 \subsection{Dataset Generation}\label{sez:data}
-To create the data sets to test both implementations, we have written a small script that uses the Python library sklearn.datasets. It allowed us to generate ad hoc clustered points with a custom standard deviation (thought the function make blobs). In particular, we selected the number of points, the dimension and the number of clusters, and the script creates three text files, a first on with all the points and a second one with the initial means. The latter has been calculated in this step in order to make fair comparisons between the two implementations setting the same starting points.\\
-The third file, instead, are saved the optimal centroids calculated by the \texttt{ sklearn.cluster} \textit{Python} library, that provides an implementation of the K-means algorithm. This file is useful because it allowed us to compare these results with those found by our implementation.
+To create the data sets to test both the implementations, we have written a small script, called \texttt{generate\_points.py} that uses the Python library \texttt{sklearn.datasets}. It allowed us to generate \textit{ad-hoc} clustered points with a custom standard deviation (through the function \texttt{make\_blobs}). In particular, we selected the number of points, the dimension and the number of clusters, and the script creates three text files, a first one with all the points and a second one with the initial means. The latter has been calculated in this step in order to make fair comparisons between the two implementations setting the same starting points.\\
+In the third file, instead, are saved the optimal centroids calculated by the \texttt{sklearn.cluster} \textit{Python} library, that provides an implementation of the K-means algorithm. This file is useful because it allowed us to compare these results with those found by our implementation.
 \\\\
 Since the goal of this project was not to develop an optimum algorithm in terms of accuracy, we decided two select the initial mean points randomly from the total number of data points.
 \subsection{I/O organization}
-Both the implementations used the HDFS to load the input files with the point. The folders \texttt{inputs} and \texttt{initial\_means} contain the input points and the initial means, respectively.
+Both the implementations used the HDFS to load the input files with the points. The folders \texttt{inputs} and \texttt{initial\_means} contain the input points and the initial means, respectively.
 \subsubsection{Stop Criteria}\label{sez:sc}
 In our two implementation we have implemented two of the 3 most common stopping criteria of the \textit{K-means Clustering algorithm}:
 \begin{itemize}
-	\item \textbf{maximum number of iteration}: this first stopping criterion exploits a command line parameter to establish a maximum number of iterations after which the execution is stopped;
-	\item \textbf{minimum centroid movement}: this second stopping criterion exploits a command line parameter used as threshold to see if all the centroids have reached a stable state. In each iteration we verify that the Euclidean Distance between the previous iteration centroid and the currently computed one is below the threshold for all the centroids; in positive case the algorithm is terminated, otherwise it continues its execution.
+	\item \textbf{maximum number of iteration}: this first stopping criterion exploits a command line parameter to establish thee maximum number of iterations after which the execution is stopped;
+	\item \textbf{minimum centroid movement}: this second stopping criterion exploits a command line parameter used as threshold to see if all the centroids no longer move beyond this parameter. In each iteration we verify that the Euclidean Distance between the previous iteration centroid and the currently computed one is below the threshold for all the centroids; in positive case the algorithm is terminated, otherwise it continues its execution.
 \end{itemize}
 
 
@@ -115,7 +115,7 @@ The \texttt{map} function computes for each point the nearest mean: the prototyp
 \indent \textit{cid} = indexOfMin(D)\\
 \indent \textbf{Emit}(\textit{cid}, \textit{value})\\
 \subsubsection{Combine function}\label{sez:combine}
-The \texttt{combine} function is an optimization to reduce the quantity of data exchanged by all the mappers with all the reducers. In order to do it, this function takes as input a (\textit{cid}, \textit{list} of Point) pair produced locally by a Mapper and it produces as ouput a couple in which the key is given by the \textit{cid} and the value is give by a tuple, composed itself by two fields \textit{sum} and \textit{count}:
+The \texttt{combine} function is an optimization to reduce the quantity of data exchanged by all the mappers with all the reducers. In order to do it, this function takes as input a (\textit{cid}, \textit{list} of Point) pair produced locally by a Mapper and it produces as ouput a couple in which the key is given by the \textit{cid} and the value is given by a tuple, composed itself by two fields \textit{sum} and \textit{count}:
 \begin{itemize}
 	\item \textit{sum} is a vector whose elements are given by the element-wise sum of all the points associated with that \textit{cid};
 	\item \textit{count} is the number of points associated with the cid that have contributed to produce the sum vector.\\
@@ -139,53 +139,53 @@ The \texttt{reduce} function should produce the new set of centroids, starting f
 \indent newCentroidValue = totalSum / totalCount\\
 \indent \textbf{Emit} (\textit{cid}, newCentroidValue)
 \subsection{Design Choices}
-The application master of this implementation is given by the class \texttt{Kmean}. In the \texttt{main} function is implemented the control-logic of the algorithm.\\
+The application master of this implementation is given by the class \texttt{Kmean}. The control-logic of the algorithm is implemented in the \texttt{main} function.\\
 Firstly the \texttt{main} function performs the \textbf{input parsing}: the provided command line parameters are used to configure some \texttt{Configuration} parameters (see subsection \ref{sez:clp}).\\
-Then there is the \textit{core} of the algorithm; the function basically iterates in a \texttt{while} cycle based on the check of the convergence conditions: in each iteration a new job is created and configured, after the \texttt{waitForCompletion} statement it performs the check to see if the algorithm has converged.\\
-The most important thing to notice is the possibility to set more than one reducer; this is done thank to the \texttt{job.setNumReduceTasks(int reducerNumber)} method. Having a multiple number of reducer means having multiple output file with name-pattern "\texttt{part-r-*}"; since we assumed that the algorithm reads the centroids from file, in the \texttt{main} we implemented the \texttt{computeNewCentroids} function. This function simply reads from all the files produced by all the reducers and writes all the data read in the file used by the mapper to load the means.
+Then there is the \textit{core} of the algorithm; the function basically iterates in a \texttt{while} cycle based on the check of the convergence conditions: in each iteration a new job is created and configured, and after the \texttt{waitForCompletion} statement it performs the check to see if the algorithm has converged.\\
+The most important thing to notice is the possibility to set more than one reducer; this is done by the \texttt{job.setNumReduceTasks(int reducerNumber)} method. Having a multiple number of reducer means having multiple output file with name-pattern "\texttt{part-r-*}". Since we assumed that the algorithm reads the centroids from file, in the \texttt{main} function we implemented the \texttt{computeNewCentroids} function: this function simply reads from all the files produced by all the reducers and writes all the data in the file used by the mapper to load the means.
 \subsubsection{Command Line Parameters}\label{sez:clp}
 The parameter passed throught the command line are:
 \begin{itemize}
 	\item \texttt{input}: path of the input file;
 	\item \texttt{output}: path of the output file;
-	\item \texttt{k}: this argument is pretty important because have a double function. In case it is given as a numeric parameter it will be the number of cluster in which group the data points. The initial centroids in this case are randomly chosen centroids from the file "centroids.txt". In case the value is given as a string, this parameter is interpreted by the program as the centroid file path.\\
-	This processing has been fundamental in our study in the comparative analysis between the Hadoop and the Spark implementations. In order to perform a fair comparison the two implementation should process the same dataset starting from the same set of centroids: the initial set of centroid is critical in reaching the optimal solution (it often conduces to suboptimal solutions) in a different number of iteration. 
+	\item \texttt{k}: this argument is pretty important because have a double function. In case it is given as a numeric parameter, it will be the number of clusters in which the data points will be grouped. The initial centroids in this case are randomly chosen among all the input points. In case the value is given as a string, this parameter is interpreted by the program as the centroid file path.\\
+	This processing has been fundamental in our study in the comparative analysis between the Hadoop and the Spark implementations. In order to perform a fair comparison the two implementations should process the same dataset starting from the same set of centroids: the initial set of centroids is critical in reaching the optimal solution (it often conduces to suboptimal solutions).
 	\item \texttt{maximum number of iterations}: this command line parameter is the one which allows us to set the maximum number of iterations that the algorithm should perform according the first stopping criterion (see subsection \ref{sez:sc}); 
 	\item \texttt{threshold}: this command line parameter is the one which allows us to set the threshold for the movement of the centroids in consecutive iterations for the second stopping criterion (see subsection \ref{sez:sc}).\\
-	In order to implement this second stopping criterion we have used the Hadoop Counter\\ \texttt{NUMBER\_OF\_UNCONVERGED}, this counter assumes as value, iteration after iteration, the number of centroids just computed in the current iteration that have not moved more than the threshold.
+	In order to implement this second stopping criterion we have used the Hadoop Counter\\ \texttt{NUMBER\_OF\_UNCONVERGED}. This counter assumes as value, iteration after iteration, the number of centroids that have not moved more than the threshold.
 	\item \texttt{reducers}: this command line parameter allows to select the number of reducers to use. 
 \end{itemize}
 \subsubsection{How to launch the program}
-Once the input file and the eventual centroid file have been uploaded on the hdfs with HDFS commands, the command to launch the execution of the program is:\[\texttt{hadoop jar Kmeans-1.0-SNAPSHOT.jar it.unipi.hadoop.Kmeans.Kmean}\] \[\texttt{<input\_file> <output\_dir> <k> <max\_iter> <threshold> <reducers>}\]
+Once the input file and the eventual centroid file have been uploaded on the hdfs, the command to launch the execution of the program is:\[\texttt{hadoop jar Kmeans-1.0-SNAPSHOT.jar it.unipi.hadoop.Kmeans.Kmean}\] \[\texttt{<input\_file> <output\_dir> <k> <max\_iter> <threshold> <reducers>}\]
 \subsection{Components}
-\subsubsection{Costum Classes}
+\subsubsection{Custom Classes}
 \paragraph{Point}
-This class implements a data point. Since it will be sent through the network, the class must implement the \texttt{writable} interface. To store the point coordinates have been used the \texttt{ArrayPrimitiveWritable}, a wrap \textit{Writable} implementation around an array of primitives (\texttt{double} type in this case). The class has all the methods that permit to sum and calculate the Euclidian distance between points.
-\paragraph{Mean} This class implements a mean point. It basically extends the Point class with the addition of a text \textit{label ID} that identify the cluster. It also implements the \texttt{WritableComparable} interfaces because, as we will see, the mean will be the \textit{key} of the (key, value) pairs exchanged between the components and so it must have a compare method used by the \textit{shuffle and sort} module for the sorting. This method is implemented by comparing the \textit{label ID} between two centroids.
+This class implements a data point. Since it will be sent through the network, the class must implement the \texttt{writable} interface. To store the point coordinates has been used the \texttt{ArrayPrimitiveWritable} class, a wrap \textit{Writable} implementation around an array of primitives (\texttt{double} type in this case). The class has all the methods that permit to sum and calculate the Euclidian distance between points.
+\paragraph{Mean} This class implements a mean point. It basically extends the Point class with the addition of a text \textit{label ID} that identifies the cluster. It also implements the \texttt{WritableComparable} interface because, as we will see, the mean will be the \textit{key} of the (Key, Value) pairs exchanged between the components and so it must have a compare method used by the \textit{shuffle and sort} for the sorting. This method is implemented by comparing the \textit{label ID} between two centroids.
 
 \subsubsection{Mapper}
-The Mapper class role has been described in subsection \ref{sez:map}. In order to perform the related actions the Mapper has to read the "centroid.txt" file in the \texttt{setup} method. We decided to read line by line the textual file using a BufferedReader and its method \texttt{readLine()}.\\
-The read centroids are stored in the \texttt{means} ArrayList data structure: we decided to proceed in this way assuming that in most of the cases clustering tasks has to group data in a quite small number of cluster, so this data structure will never use a large quantity of memory. One important thing to notice is that the Mapper has two member field marked with \texttt{final}, this is because in this way the map task will reuse the same portion of memory in order to store the Writable Objects.\\\\
-The \texttt{map} function takes as inputs a generic \texttt{Object} as key (we implemented it this way because we have completely ignored the key in the map phase) and a \texttt{Text} as value since in the application master process we set as \texttt{InputFormatClass} the \texttt{TextInputFormatClass}. The Text value represents a line read from the input file, so it has to be parsed in an array of Double in order to build a Point.\\
-Once the point has been built we have computed the index of the nearest mean using the ArrayList \texttt{means} and we produced as output a Key-Value pair consisting in nearest mean and the Point.
+The Mapper class role has been described in subsection \ref{sez:map}. In order to perform the related actions the Mapper has to read the centroids file in the \texttt{setup} method. We decided to read line by line the textual file using a \texttt{BufferedReader} and its method \texttt{readLine()}.\\
+The read centroids are stored in the \texttt{ArrayList<means>} data structure: we decided to proceed in this way assuming that in most of the cases clustering tasks have to group data in a quite small number of clusters. So this data structure will never use a large quantity of memory. One important thing to notice is that the Mapper has two member field marked with \texttt{final}, this is because in this way the map task will reuse the same portion of memory in order to store the \texttt{Writable} objects.\\\\
+The \texttt{map} function takes as inputs a generic \texttt{Object} as key (we implemented it this way because we have completely ignored the key in the map phase) and a \texttt{Text} as value, since we set as \texttt{TextInputFormatClass} as \texttt{InputFormatClass}. The \texttt{Text} value represents a line read from the input file, so it has to be parsed in an array of double in order to build a Point.\\
+Once the point has been built we have computed the index of the nearest mean using the \texttt{ArrayList<means>} and we produced as output a (Key, Value) pair consisting in nearest mean and the Point.
 
 \subsubsection{Combiner}
-The aim of the Combiner class has been describer in subsection \ref{sez:combine}.
-The only thing to notice is that in order to perform this task we needed to perform a deep copy of the first point of the \texttt{Iterable<Point>} taken as input: this is because the access to the \texttt{Iterable} object returns a reference to the currently pointed object, so in order to copy this object is fundamental to perform the deep copy. [QUESTA COSA NON SE LA METTEREI PER ISCRITTA]
+The aim of the Combiner class has been described in subsection \ref{sez:combine}.
+The only thing to notice is that in order to perform its task we needed to perform a deep copy of the first point of the \texttt{Iterable<Point>} taken as input.
 \subsubsection{Reducer}
-The aim of the Combiner class has been describer in subsection \ref{sez:reduce}.\\
-In order to perform its task in the setup method it reads the Configuration parameter \texttt{threshold}, this will be used in the reduce function in order to verify the convergence according the second stopping criterion (see subsection \ref{sez:sc}).
-The considerations about the member data structure are similar to the ones of the Mapper class while the consideration about the \texttt{Iterable<Point>} object are similar to the one of the Combiner class.
+The aim of the Reducer class has been describer in subsection \ref{sez:reduce}. 
+In order to perform its task in the \texttt{setup} method it reads the Configuration parameter \texttt{threshold}, this will be used in the reduce function in order to verify the convergence according the second stopping criterion (see subsection \ref{sez:sc}).
+The considerations about the member data structures are similar to the ones of the Mapper class.
 \newpage
 \section{Spark Implementation}\label{sez:spark}
 \subsection{Steps}
 \begin{enumerate}
-	\item Load "inputs.txt" text file into Spark;
-	\item Extract initial centroids from the \texttt{line} RDD
+	\item Load input points text file into a Spark RDD;
 	\item Tansform the lines RDD into a \texttt{Point} RDD;
+	\item Extract initial centroids from the \texttt{Point} RDD
 	\item While not converged:
 	\begin{enumerate}[label*=\arabic*.]
-	\item Broadcast the centroids to all nodes;
+	\item Broadcast the centroids to all the nodes;
 	\item Assign each \texttt{Point} to the closest centroid;
 %	\item Compute the new centroid by \texttt{cluster\_id} to sum up coordinates;
 	\item Calculate the new centroids;
@@ -194,61 +194,76 @@ The considerations about the member data structure are similar to the ones of th
 	\item Save the centroids as text file.
 \end{enumerate}
 \subsection{Design Choices}
-The first task that tha \texttt{main} function has to perform is to initialize the \texttt{SparkContext} so that the application can run on the cluster using the value \texttt{"yarn"} for the master parameter.\\\\
-Once the context has been initialized we have built the Point RDD. In order to do it we have created a lines RDD starting from the input file and we applied the \texttt{map} trasnformation on it taking as input the function \texttt{create\_point}. Once created the Point RDD we decided to cache it because it will be reused many times until the algorithm will not converged according one of the stopping criteria.\\\\
-The next task was to build the numpy array for the centroids according to the value of the \texttt{k} parameter. [DISCORSO DELLA CREAZIONE PRIMA DOPO COLLECT E DISTRIBUZIONE DEI PUNTI NEL CLUSTER]\\\\
-Once built, the numpy array is then written in the "centroid.txt" file and the core of the algorithm is ready to run.\\\\
-The core of the algorithm is a while cycle which iterates based on the convergence condition. At each iteration we perform basically two steps:
+The first task that the \texttt{main} function has to perform is to initialize the \texttt{SparkContext} so that the application can run on the cluster using the value \texttt{"yarn"} for the master parameter.\\\\
+Once the context has been initialized we have built the Point RDD. In order to do it we have created a lines RDD starting from the input file and we applied the \texttt{map} trasnformation on it taking as input the function \texttt{create\_point}. Once created the Point RDD we decided to cache it because it will be reused many times until the algorithm will not converged according one of the stopping criteria.\\
+The next task was to build the \texttt{numpy} array for the centroids according to the value of the \texttt{k} parameter.\\
+The core of the algorithm is a while cycle which iterates based on the convergence condition. At each iteration the algorithm performs basically two steps:
 \begin{enumerate}
-	\item first of all we associate to each point the nearest mean. This is done applying firstly a \texttt{map} tranformation to all the points giving as input the \texttt{assign\_to\_closest\_mean} function; the produced RDD is then given in input to a second transformation \texttt{groupByKey}, which is a wide transformation because it demands data-shuffle to generate an RDD with cluster id and the list of points associated to it. So far there is only lazy evaluation;
-	\item the second step applies firstly a \texttt{map} transformation to the RDD produced by the previous step in order to generate the new centroids; this new centroids are then sorted by key with the \texttt{sortByKey} transformation and finally they collected in the application process node using the \texttt{collect()} action, the latter triggers the entire computation.
+	\item first of all it associates to each point the nearest mean. This is done applying firstly a \texttt{map} tranformation to all the points giving as input the \texttt{assign\_to\_closest\_mean} function; the produced RDD is then given as input to a second transformation \texttt{groupByKey}, which is a wide transformation because it demands data-shuffle to generate an RDD with cluster id and the list of points associated to it. So far there is only lazy evaluations;
+	\item the second step applies firstly a \texttt{map} transformation to the RDD produced by the previous step in order to generate the new centroids; they are then sorted by key with the \texttt{sortByKey} transformation and finally they are collected in the Spark driver using the \texttt{collect()} action, the latter triggers the entire computation.
 \end{enumerate}
-The \texttt{sortByKey} in the second step is not mandatory, we decided to implement it in order to mimic the Hadoop behaviour. This lead to performance consideration which will be discussed in subsection \ref{sez:per}.\\\\
-Once the algorithm has converged the centroids are written in a file in HDFS.
+%The \texttt{sortByKey} in the second step is not mandatory, we decided to implement it in order to mimic the Hadoop behaviour. This lead to performance consideration which will be discussed in subsection \ref{sez:per}.\\\\
+Once the algorithm has converged the centroids are written in a file.
 
 \subsubsection{Command Line Parameters}
-The description of the parameters passed from command line interface is exactly the same of the one provided for the Hadoop implementation in subsection \ref{sez:clp}.
+The description of the parameters passed from command line interface is exactly the same of the one provided for the Hadoop implementation in subsection \ref{sez:clp}, except for the number of reducers.
 \subsubsection{How to launch the program}
-Once the input file and the eventual file of the initial centroid vector have been uploaded on the hdfs with HDFS commands, the command to launch the execution of the program is:\\
+Once the input file has been uploaded on the hdfs with HDFS commands, the command to launch the execution of the program is:\\
 \texttt{spark-submit kmeans.py -k <clusters or file> -i <input\_file> -o <output\_file> \\-m <max\_iter> -t <threshold>}
 \newpage
 \section{Experimental Results} \label{sez:results}
 In this part we will discuss the test and validation phase of our two implementations and we will show a fair comparison between the Hadoop and the Spark implementations.\\
-"Fair comparison" means that the executions of the algorithm used for this comparison have been fed with the same input file, the same initial vector of centroids, the same threshold for the second stopping criterion and the same maximum number of iterations.
+"Fair comparison" means that the executions of the algorithm have been fed with the same input file, the same initial vector of centroids, the same threshold for the second stopping criterion and the same maximum number of iterations.
 \subsection{Testing on datasets}
-The first validation task we have performed has been the one of comparing the centroids configurations produced by our two implementations. \\
-During this comparison phase we have tested our implementations combining the following parameters:
-\begin{table}[H]
-	\centering
-\begin{tabular}{|l|c|}
-	\hline
-	\textbf{Parameter}       & \textbf{Set of values}       \\
-	\hline
-	Number of points        & \{1000, 10000, (100000??)\}  \\
-	Number of clusters         & \{5, 10, 15, 20, 25\}     \\
-	Number of Point dimensions           & 3     \\
-	Threshold         & 0.01     \\
-	Maximum number of iterations          & 100     \\
-	\hline
-\end{tabular}
-\caption{Configuration Parameters for testing executions.}
-\end{table}
-\noindent The centroids produced by the two implementation are always the same and they have been produced in the same number of iterations.\\
-So we proceeded in comparing them with some well-known results produced by the Python script to produce the dataset introduced in subsection \ref{sez:data}.\\
-The Figure \ref{fig:plot} shows the result of the K-means algorithm we implemented in a simplified case where the clusters are quite separate:
+We performed a validation phase comparing the centroids configurations computed by our two implementations. The produced centroids were always the same and they have been produced in the same number of iterations.\\
+So we proceeded in comparing them with the well-known results produced by the \texttt{generate\_point} script.
+The Figure \ref{fig:plot} shows the result of the K-means algorithm we implemented in a simplified case where the clusters are quite separated:
 \begin{figure}[H]
 	\centering
-	\includegraphics[width = 0.48\textwidth]{results}
+	\includegraphics[width = 0.8\textwidth]{results}
 	\caption{K-means algorithm with 1000 points and K = 5}
 	\label{fig:plot}
 \end{figure}
 \noindent
-As we can see the calculated centroids (the red dots) overlap the desired ones calculated by script.\\ 
-Anyway, the results were not exactly the same, in most of the cases there was a centroid that was not alingned with the desired one produced by the Python script: this is simply because of the initial set of centroids from which the algorithm starts.\\
-In any case we can considered our results accettable, the cause of the difference is simply the randomicity in the choose of the initial centroids set which lead us to a suboptimal solution of the clustering problem.
+As we can see the calculated centroids (the red dots) overlap the desired ones (the yellow ones) calculated by the script.\\ 
+Anyway, the results were not exactly the same, the reason of the difference is simply the randomicity in the choice of the initial centroids set which lead us to a suboptimal solution of the clustering problem. In any case we can consider our results acceptable.
 
-\subsection{Comparazione sui tempi di esecuzione delle due implementazione}
-Finally, we made a comparison, in terms on time elapsed to run the algorithm, between both implementations developed.\\
-\subsubsection{Osservazioni}\label{sez:per}
-discorso dello spreco di tempo della sortByKey dove però per fare una comparazione fair abbiamo deciso di metterla nel codice spark anche se in realtà  non necessaria
+\subsection{Execution time comparison between the two implementations}
+Finally, we made a comparison, in terms on time elapsed to run the algorithm, between both the developed implementations. We have tested them combining the following parameters:
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		\textbf{Parameter}       & \textbf{Set of values}       \\
+		\hline
+		Number of points        & \{1000, 10000\}  \\
+		Number of clusters         & \{5, 10, 15, 20, 25\}     \\
+		Number of Point dimensions           & 3     \\
+		Threshold         & 0.01     \\
+		Maximum number of iterations          & 100     \\
+		\hline
+	\end{tabular}
+	\caption{Configuration Parameters for testing executions.}
+\end{table}
+\noindent 
+Figures \ref{fig:bench1} and \ref{fig:bench2} show the execution time spent by Hadoop and Spark implementations in order to successfully complete the algorithm 
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{.5\textwidth}
+		\centering
+		\includegraphics[width=.99\linewidth]{bench_1.png}
+		\caption{1000 points}
+		\label{fig:bench1}
+	\end{minipage}%
+	\begin{minipage}{.5\textwidth}
+		\centering
+		\includegraphics[width=.99\linewidth]{bench_2.png}
+		\caption{10000 points}
+		\label{fig:bench2}
+	\end{minipage}
+\end{figure}
+\noindent 
+As we can see, the Spark implementation results always faster with respect to the Hadoop one. This is due to the fact that Spark exploits the RAM memory in order to store the intermediate RDDs, while the Hadoop implementation always stores the intermediate output data into the disk.   
+%\subsubsection{Osservazioni}\label{sez:per}
+%discorso dello spreco di tempo della sortByKey dove però per fare una comparazione fair abbiamo deciso di metterla nel codice spark anche se in realtà  non necessaria
 \end{document}

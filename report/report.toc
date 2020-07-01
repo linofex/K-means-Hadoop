@@ -13,7 +13,7 @@
 \contentsline {subsubsection}{\numberline {2.2.1}Command Line Parameters}{3}{subsubsection.2.2.1}
 \contentsline {subsubsection}{\numberline {2.2.2}How to launch the program}{3}{subsubsection.2.2.2}
 \contentsline {subsection}{\numberline {2.3}Components}{3}{subsection.2.3}
-\contentsline {subsubsection}{\numberline {2.3.1}Costum Classes}{3}{subsubsection.2.3.1}
+\contentsline {subsubsection}{\numberline {2.3.1}Custom Classes}{3}{subsubsection.2.3.1}
 \contentsline {paragraph}{\numberline {2.3.1.1}Point}{3}{paragraph.2.3.1.1}
 \contentsline {paragraph}{\numberline {2.3.1.2}Mean}{4}{paragraph.2.3.1.2}
 \contentsline {subsubsection}{\numberline {2.3.2}Mapper}{4}{subsubsection.2.3.2}
@@ -22,9 +22,8 @@
 \contentsline {section}{\numberline {3}Spark Implementation}{5}{section.3}
 \contentsline {subsection}{\numberline {3.1}Steps}{5}{subsection.3.1}
 \contentsline {subsection}{\numberline {3.2}Design Choices}{5}{subsection.3.2}
-\contentsline {subsubsection}{\numberline {3.2.1}Command Line Parameters}{6}{subsubsection.3.2.1}
-\contentsline {subsubsection}{\numberline {3.2.2}How to launch the program}{6}{subsubsection.3.2.2}
-\contentsline {section}{\numberline {4}Experimental Results}{7}{section.4}
-\contentsline {subsection}{\numberline {4.1}Testing on datasets}{7}{subsection.4.1}
-\contentsline {subsection}{\numberline {4.2}Comparazione sui tempi di esecuzione delle due implementazione}{7}{subsection.4.2}
-\contentsline {subsubsection}{\numberline {4.2.1}Osservazioni}{8}{subsubsection.4.2.1}
+\contentsline {subsubsection}{\numberline {3.2.1}Command Line Parameters}{5}{subsubsection.3.2.1}
+\contentsline {subsubsection}{\numberline {3.2.2}How to launch the program}{5}{subsubsection.3.2.2}
+\contentsline {section}{\numberline {4}Experimental Results}{6}{section.4}
+\contentsline {subsection}{\numberline {4.1}Testing on datasets}{6}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Execution time comparison between the two implementations}{6}{subsection.4.2}

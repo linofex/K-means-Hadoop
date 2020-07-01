@@ -11,7 +11,7 @@
 \BOOKMARK [3][-]{subsubsection.2.2.1}{Command Line Parameters}{subsection.2.2}% 11
 \BOOKMARK [3][-]{subsubsection.2.2.2}{How to launch the program}{subsection.2.2}% 12
 \BOOKMARK [2][-]{subsection.2.3}{Components}{section.2}% 13
-\BOOKMARK [3][-]{subsubsection.2.3.1}{Costum Classes}{subsection.2.3}% 14
+\BOOKMARK [3][-]{subsubsection.2.3.1}{Custom Classes}{subsection.2.3}% 14
 \BOOKMARK [3][-]{subsubsection.2.3.2}{Mapper}{subsection.2.3}% 15
 \BOOKMARK [3][-]{subsubsection.2.3.3}{Combiner}{subsection.2.3}% 16
 \BOOKMARK [3][-]{subsubsection.2.3.4}{Reducer}{subsection.2.3}% 17
@@ -22,5 +22,4 @@
 \BOOKMARK [3][-]{subsubsection.3.2.2}{How to launch the program}{subsection.3.2}% 22
 \BOOKMARK [1][-]{section.4}{Experimental Results}{}% 23
 \BOOKMARK [2][-]{subsection.4.1}{Testing on datasets}{section.4}% 24
-\BOOKMARK [2][-]{subsection.4.2}{Comparazione sui tempi di esecuzione delle due implementazione}{section.4}% 25
-\BOOKMARK [3][-]{subsubsection.4.2.1}{Osservazioni}{subsection.4.2}% 26
+\BOOKMARK [2][-]{subsection.4.2}{Execution time comparison between the two implementations}{section.4}% 25
