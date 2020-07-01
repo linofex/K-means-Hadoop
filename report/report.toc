@@ -1,5 +1,5 @@
-\select@language {italian}
-\select@language {italian}
+\babel@toc {italian}{}
+\babel@toc {italian}{}
 \contentsline {section}{\numberline {1}Introduction}{1}{section.1}
 \contentsline {subsection}{\numberline {1.1}Dataset Generation}{1}{subsection.1.1}
 \contentsline {subsection}{\numberline {1.2}I/O organization}{1}{subsection.1.2}
@@ -12,19 +12,19 @@
 \contentsline {subsection}{\numberline {2.2}Design Choices}{2}{subsection.2.2}
 \contentsline {subsubsection}{\numberline {2.2.1}Command Line Parameters}{3}{subsubsection.2.2.1}
 \contentsline {subsubsection}{\numberline {2.2.2}How to launch the program}{3}{subsubsection.2.2.2}
-\contentsline {subsection}{\numberline {2.3}Components}{4}{subsection.2.3}
-\contentsline {subsubsection}{\numberline {2.3.1}Costum Classes}{4}{subsubsection.2.3.1}
-\contentsline {paragraph}{\numberline {2.3.1.1}Point}{4}{paragraph.2.3.1.1}
+\contentsline {subsection}{\numberline {2.3}Components}{3}{subsection.2.3}
+\contentsline {subsubsection}{\numberline {2.3.1}Costum Classes}{3}{subsubsection.2.3.1}
+\contentsline {paragraph}{\numberline {2.3.1.1}Point}{3}{paragraph.2.3.1.1}
 \contentsline {paragraph}{\numberline {2.3.1.2}Mean}{4}{paragraph.2.3.1.2}
 \contentsline {subsubsection}{\numberline {2.3.2}Mapper}{4}{subsubsection.2.3.2}
 \contentsline {subsubsection}{\numberline {2.3.3}Combiner}{4}{subsubsection.2.3.3}
 \contentsline {subsubsection}{\numberline {2.3.4}Reducer}{4}{subsubsection.2.3.4}
-\contentsline {section}{\numberline {3}Spark Implementation}{4}{section.3}
-\contentsline {subsection}{\numberline {3.1}Steps}{4}{subsection.3.1}
+\contentsline {section}{\numberline {3}Spark Implementation}{5}{section.3}
+\contentsline {subsection}{\numberline {3.1}Steps}{5}{subsection.3.1}
 \contentsline {subsection}{\numberline {3.2}Design Choices}{5}{subsection.3.2}
-\contentsline {subsubsection}{\numberline {3.2.1}Command Line Parameters}{5}{subsubsection.3.2.1}
-\contentsline {subsubsection}{\numberline {3.2.2}How to launch the program}{5}{subsubsection.3.2.2}
-\contentsline {section}{\numberline {4}Experimental Results}{5}{section.4}
-\contentsline {subsection}{\numberline {4.1}Testing on datasets}{5}{subsection.4.1}
-\contentsline {subsection}{\numberline {4.2}Comparazione sui tempi di esecuzione delle due implementazione}{5}{subsection.4.2}
-\contentsline {subsubsection}{\numberline {4.2.1}Osservazioni}{5}{subsubsection.4.2.1}
+\contentsline {subsubsection}{\numberline {3.2.1}Command Line Parameters}{6}{subsubsection.3.2.1}
+\contentsline {subsubsection}{\numberline {3.2.2}How to launch the program}{6}{subsubsection.3.2.2}
+\contentsline {section}{\numberline {4}Experimental Results}{7}{section.4}
+\contentsline {subsection}{\numberline {4.1}Testing on datasets}{7}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Comparazione sui tempi di esecuzione delle due implementazione}{7}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {4.2.1}Osservazioni}{7}{subsubsection.4.2.1}

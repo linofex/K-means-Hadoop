@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 
-
   public class KmeansMapper extends Mapper<Object, Text, Mean, Point> {
     
     private final ArrayList<Mean> means = new ArrayList<Mean>();
@@ -40,7 +39,6 @@ import java.util.Iterator;
       finally {
         br.close();
       }
-      
     }
       
 
