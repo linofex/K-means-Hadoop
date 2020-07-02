@@ -161,7 +161,9 @@ public class Kmean{
             while (line != null){  
                 if(random_points_indexes.contains(lineCounter)){
                     bw.write(clusterIdCounter + "\t" + line + "\n");
-                    clusterIdCounter++;
+                    clusterIdCounter ++;
+                    if(clusterIdCounter > num_centroids) // to avoid complete read of the file when the task is finished
+                        break;
                 }
                 line = br.readLine();
                 lineCounter++;
