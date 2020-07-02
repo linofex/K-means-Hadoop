@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.ctc.wstx.util.StringUtil;
 
@@ -137,34 +139,35 @@ public class Kmean{
     }
 
     private static Path generateCentroids(FileSystem fs, int num_centroids, Path inputPath) throws IOException{
-        ArrayList<Integer> random_points_indexes = new ArrayList<Integer>(); 
+        //ArrayList<Integer> random_points_indexes = new ArrayList<Integer>(); 
         int pointNum = Integer.parseInt(inputPath.toString().split("_")[1]);
         Path centroidPath = new Path("initial_means/random_centroids.txt");
-        Random objGenerator = new Random();
         int lineCounter = 0;
-        int idCounter = 1;
-        // choose num_centroids random points and set them as initial centroids.
-        for (int i = 1; i <= num_centroids; i++){
-            
-            random_points_indexes.add(objGenerator.nextInt(pointNum + 1));
+        int clusterIdCounter = 1;
+        Random randNum = new Random();
+        
+        // choose num_centroids random indeces with no duplicates (Random seeds with current time)
+        Set<Integer> random_points_indexes = new HashSet<Integer>();
+        while (random_points_indexes.size() < num_centroids) {
+            random_points_indexes.add(randNum.nextInt(pointNum)+1);
         }
+
+        // write the randomly chosen centroids into the "random_centroids.txt" file
         try{
             BufferedReader br = new BufferedReader (new InputStreamReader(fs.open(inputPath)));
             BufferedWriter bw =  new BufferedWriter( new OutputStreamWriter(fs.create(centroidPath, true))); //override if exist
             String line = br.readLine();
-            //read all points
+            //read the points
             while (line != null){  
                 if(random_points_indexes.contains(lineCounter)){
-                    bw.write(idCounter+"\t"+line+"\n");
-                    idCounter++;
+                    bw.write(clusterIdCounter + "\t" + line + "\n");
+                    clusterIdCounter++;
                 }
                 line = br.readLine();
                 lineCounter++;
-                
             }
             br.close();
-            
-            
+            /*
             int point_num = points.size();
             Random objGenerator = new Random();
             // choose num_centroids random points and set them as initial centroids.
@@ -172,6 +175,7 @@ public class Kmean{
                 int randomPoint = objGenerator.nextInt(point_num + 1);
                 bw.write(i+"\t"+points.get(randomPoint)+"\n");
             }
+            */
             bw.close();
         }
         return centroidPath;
