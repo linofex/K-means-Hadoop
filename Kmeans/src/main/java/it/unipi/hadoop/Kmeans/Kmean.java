@@ -168,7 +168,12 @@ public class Kmean{
                 line = br.readLine();
                 lineCounter++;
             }
+        }
+        finally{
             br.close();
+            bw.close();
+        }
+            
             /*
             int point_num = points.size();
             Random objGenerator = new Random();
@@ -178,7 +183,7 @@ public class Kmean{
                 bw.write(i+"\t"+points.get(randomPoint)+"\n");
             }
             */
-            bw.close();
+            
         }
         return centroidPath;
     }
