@@ -1,6 +1,5 @@
 package it.unipi.hadoop.Kmeans;
 
-import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.Text;
 import java.io.IOException;
