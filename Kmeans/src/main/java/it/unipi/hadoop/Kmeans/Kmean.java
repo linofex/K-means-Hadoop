@@ -153,9 +153,9 @@ public class Kmean{
         }
 
         // write the randomly chosen centroids into the "random_centroids.txt" file
+        BufferedReader br = new BufferedReader (new InputStreamReader(fs.open(inputPath)));
+        BufferedWriter bw =  new BufferedWriter( new OutputStreamWriter(fs.create(centroidPath, true))); //override if exist
         try{
-            BufferedReader br = new BufferedReader (new InputStreamReader(fs.open(inputPath)));
-            BufferedWriter bw =  new BufferedWriter( new OutputStreamWriter(fs.create(centroidPath, true))); //override if exist
             String line = br.readLine();
             //read the points
             while (line != null){  
