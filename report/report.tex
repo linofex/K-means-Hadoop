@@ -19,6 +19,9 @@
 \usepackage[bottom]{footmisc}
 \usepackage{float}
 \usepackage{soul}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
 %\usepackage[hyphenbreaks]{breakurl}
 %\usepackage[font=small,labelfont=bf,labelsep=space]{caption}
 %\captionsetup{%
@@ -54,6 +57,11 @@
 
 \setcounter{secnumdepth}{5}
 \setcounter{secnumdepth}{5}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
 
 \graphicspath{ {./images/} }
 \author{Alessandro Noferi, Francesco Fornaini, Francesco Mione, Leonardo Lossi}
@@ -95,7 +103,7 @@ In our two implementation we have implemented two of the 3 most common stopping 
 	\item \textbf{minimum centroid movement}: this second stopping criterion exploits a command line parameter used as threshold to see if all the centroids no longer move beyond this parameter. In each iteration we verify that the Euclidean Distance between the previous iteration centroid and the currently computed one is below the threshold for all the centroids; in positive case the algorithm is terminated, otherwise it continues its execution.
 \end{itemize}
 
-
+\newpage
 \section{Hadoop Implementation}\label{sez:hadoop}
 \subsection{Pseudocode}
 In order to develop an Hadoop implementation using the MaprReduce runtime support we had to think about the K-Means algorithm in MapReduce terms, that is in \texttt{map} and \texttt{reduce} (\textit{pure}) \texttt{functions} terms.\\ 
@@ -105,39 +113,66 @@ The following one is the pseudocode of our implementation, we need firstly to in
 	\item \textit{cid} is the \textit{cluster-id} produced by the python script \texttt{generate\_points.py};
 \end{itemize}
 \subsubsection{Map function}\label{sez:map}
-The \texttt{map} function computes for each point the nearest mean: the prototype of this function should take as input a (key, value) pair where the value is given by a point (the key is ignored) and should produce as output a (\textit{cid}, point) pair.\\\\
-\noindent method map(key, \textit{value})\\
-%\indent\indent $D \leftarrow \{\emptyset\}$\\
-\indent D = [ ]\\
-\indent \textbf{for each} $\mu_i \in M$ \textbf{do}\\
-\indent\indent D.append(euclideanDistance(\textit{value}, $\mu_i$))\\
-%\indent\indent\indent $D\leftarrow D\;\cup$ \{euclideanDistance(\textit{value}, $\mu_i$)\}\\
-\indent \textit{cid} = indexOfMin(D)\\
-\indent \textbf{Emit}(\textit{cid}, \textit{value})\\
+The \texttt{map} function computes for each point the nearest mean: the prototype of this function should take as input a (key, value) pair where the value is given by a point (the key is ignored) and should produce as output a (\textit{cid}, point) pair.
+\begin{algorithm}
+	\caption{: \textbf{Map function}}
+	\begin{algorithmic}[1]
+		%\Method \textbf{method map}{}
+		\State $D = [ ]$
+		%\State $i \gets \textit{patlen}$
+		%\BState \emph{top}:
+		%\Return false
+		\For {$\mu_i \in M$}
+		\State \textit{D}.append(euclideanDistance(\textit{value}, $\mu_i$))
+		\EndFor
+		\State \textit{cid} = indexOfMin(\textit{D})
+		\State \textbf{Emit}(\textit{cid}, \textit{value})
+		%\EndMethod
+	\end{algorithmic}
+\end{algorithm}
 \subsubsection{Combine function}\label{sez:combine}
 The \texttt{combine} function is an optimization to reduce the quantity of data exchanged by all the mappers with all the reducers. In order to do it, this function takes as input a (\textit{cid}, \textit{list} of Point) pair produced locally by a Mapper and it produces as ouput a couple in which the key is given by the \textit{cid} and the value is given by a tuple, composed itself by two fields \textit{sum} and \textit{count}:
 \begin{itemize}
 	\item \textit{sum} is a vector whose elements are given by the element-wise sum of all the points associated with that \textit{cid};
-	\item \textit{count} is the number of points associated with the cid that have contributed to produce the sum vector.\\
+	\item \textit{count} is the number of points associated with the cid that have contributed to produce the sum vector.
 \end{itemize}
-
-\noindent method combine(\textit{cid, list}[\textit{value}])\\
-\indent sum $\leftarrow$ 0\\
-\indent count $\leftarrow$ 0\\
-\indent \textbf{for each} $l_i$ in \textit{list}[\textit{value}] \textbf{do}\\
-\indent\indent sum $\leftarrow$ sum + $l_i$\\
-\indent\indent count $\leftarrow$ count + 1\\
-\indent \textbf{Emit} (\textit{cid}, (sum, count) )\\
+\begin{algorithm}
+	\caption{: \textbf{Combine function}}
+	\begin{algorithmic}[1]
+		%\Method \textbf{method map}{}
+		\State \textbf{Input:} \textit{cid, list[value]}
+		\State $sum \leftarrow 0$
+		\State $count \leftarrow 0$
+		%\State $i \gets \textit{patlen}$
+		%\BState \emph{top}:
+		%\Return false
+		\For{\textbf{each} $l_i$ \textbf{in} \textit{list[value]}}
+		\State $sum \leftarrow sum + l_i$
+		\State $count \leftarrow count + 1$
+		\EndFor
+		\State \textbf{Emit} (\textit{cid,} (\textit{sum, count}) )
+	\end{algorithmic}
+\end{algorithm}
 \subsubsection{Reduce function}\label{sez:reduce}
-The \texttt{reduce} function should produce the new set of centroids, starting from the pairs composed by the \textit{cid} and its associated list of tuples (\textit{sum, count}). The prototype of this function should take as input a \textit{(cid, list(sum,count))} pair and should produce a (\textit{cid}, newCentroid) pair.\\\\
-\noindent method reduce(\textit{cid, list}(sum, count))\\
-\indent totalSum $\leftarrow$ 0\\
-\indent totalCount $\leftarrow$ 0\\
-\indent \textbf{for each} sum$_i$, count$_i$ in \textit{list}[(sum, count)] \textbf{do}\\
-\indent\indent totalSum $\leftarrow$ totalSum + sum$_i$\\
-\indent\indent totalCount $\leftarrow$ totalCount + count$_i$\\
-\indent newCentroidValue = totalSum / totalCount\\
-\indent \textbf{Emit} (\textit{cid}, newCentroidValue)
+The \texttt{reduce} function should produce the new set of centroids, starting from the pairs composed by the \textit{cid} and its associated list of tuples (\textit{sum, count}). The prototype of this function should take as input a \textit{(cid, list(sum,count))} pair and should produce a (\textit{cid}, newCentroid) pair.
+\begin{algorithm}
+	\caption{: \textbf{Reduce function}}
+	\begin{algorithmic}[1]
+		%\Method \textbf{method map}{}
+		\State \textbf{Input:} \textit{cid, list(sum, count)}
+		\State $totalSum \leftarrow 0$
+		\State $totalCount \leftarrow 0$
+		%\State $i \gets \textit{patlen}$
+		%\BState \emph{top}:
+		%\Return false
+		\For{\textbf{each} sum$_i$, count$_i$ \textbf{in} \textit{list[(sum, count)]}}
+		\State $totalSum \leftarrow totalSum + sum_i$
+		\State $totalCount \leftarrow totalCount + count_i$
+		\EndFor
+		\State \textit{newCentroidValue = totalSum / totalCount}
+		\State \textbf{Emit} (\textit{cid, newCentroidValue})
+	\end{algorithmic}
+\end{algorithm}
 \subsection{Design Choices}
 The application master of this implementation is given by the class \texttt{Kmean}. The control-logic of the algorithm is implemented in the \texttt{main} function.\\
 Firstly the \texttt{main} function performs the \textbf{input parsing}: the provided command line parameters are used to configure some \texttt{Configuration} parameters (see subsection \ref{sez:clp}).\\
@@ -157,6 +192,7 @@ The parameter passed throught the command line are:
 \end{itemize}
 \subsubsection{How to launch the program}
 Once the input file and the eventual centroid file have been uploaded on the hdfs, the command to launch the execution of the program is:\[\texttt{hadoop jar Kmeans-1.0-SNAPSHOT.jar it.unipi.hadoop.Kmeans.Kmean}\] \[\texttt{<input\_file> <output\_dir> <k> <max\_iter> <threshold> <reducers>}\]
+
 \subsection{Components}
 \subsubsection{Custom Classes}
 \paragraph{Point}
@@ -263,7 +299,45 @@ Figures \ref{fig:bench1} and \ref{fig:bench2} show the execution time spent by H
 	\end{minipage}
 \end{figure}
 \noindent 
-As we can see, the Spark implementation results always faster with respect to the Hadoop one. This is due to the fact that Spark exploits the RAM memory in order to store the intermediate RDDs, while the Hadoop implementation always stores the intermediate output data into the disk.   
+As we can see, the Spark implementation results always faster with respect to the Hadoop one. This is due to the fact that Spark exploits the RAM memory in order to store the intermediate RDDs, while the Hadoop implementation always stores the intermediate output data into the disk.\\
+As an additional confirmation Table \ref{tab:tab} the execution times ratio between the two implementations related to the number of iterations that the algorithm has exploited in order to converge.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		\textbf{\# Clusters} & \textbf{\# Points} & \textbf{Iterations to converge} & \textbf{Execution Times Ratio}\\
+		\hline
+		5 & 1000 & 7 & 4.3 \\
+		\hline
+		10 & 1000 & 36 & 9.1 \\
+		\hline
+		15 & 1000 & 17 & 6.7 \\
+		\hline
+		20 & 1000 & 16 & 5.8 \\
+		\hline
+		25 & 1000 & 18 & 6.6 \\
+		\hline
+		5 & 10000 & 14 & 5.5 \\
+		\hline
+		10 & 10000 & 25 & 6.2\\
+		\hline
+		15 & 10000 & 33 & 11.3\\
+		\hline
+		20 & 10000 & 78 & 9\\
+		\hline
+		25 & 10000 & 84 & 8.2\\
+		\hline
+	\end{tabular}
+	\caption{Relationship between number of iterations to converge and Execution Time ratio.}
+	\label{tab:tab}
+\end{table}
+\noindent 
+%Paying attention to the axis scale, this can be noticed looking at the results of the executions using 5 clusters in Figures \ref{fig:bench1} and \ref{fig:bench2}: 
+%\begin{itemize}
+%	\item in Figure \ref{fig:bench1} the convergence has been reached in 7 iterations, the Hadoop execution time is 138 seconds while the Spark one is 32 seconds. More or less Hadoop spent 4x execution time with respect to Spark;
+%	\item in Figure \ref{fig:bench2} the convergence has been reached in 14 iterations, the Hadoop execution time is 293 seconds while the Spark one is 53 seconds. This means that in this case Hadoop spent 5.5x execution time with respect to Spark.
+%\end{itemize}
+%The reason of this behavior is that the Spark configuration is complex at least as the Hadoop one, so the gain in performance derived from the usage of the RAM to store the intermediate data is not fully exploited.
 %\subsubsection{Osservazioni}\label{sez:per}
 %discorso dello spreco di tempo della sortByKey dove però per fare una comparazione fair abbiamo deciso di metterla nel codice spark anche se in realtà  non necessaria
 \end{document}
