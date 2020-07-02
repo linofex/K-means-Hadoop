@@ -9,6 +9,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Random;
 
 import com.ctc.wstx.util.StringUtil;
 
@@ -50,20 +52,18 @@ public class Kmean{
         String centroids = otherArgs[2];
         int max_iterations = Integer.parseInt(otherArgs[3]);
         int numReducers = Integer.parseInt(otherArgs[5]);
-        if(StringUtils.isNumeric(centroids)){
-            //generateCentroids(fs,Integer.parseInt(centroids), inputPath);
-            //centroids = "centroids.txt";
+        Path centroidsPath = null;
+        if(StringUtils.isNumeric(centroids)){ // generate random centroids from input points
+            centroidsPath = generateCentroids(fs,Integer.parseInt(centroids), inputPath);
+            centroids = centroidsPath.toString();
         }
-        Path centroidsPath = new Path(centroids);
-        
-        // generazione centroidi iniziali
-        // caricare il file su HDFS + definire anche il nome del file
-        // centroidsFileName = nome del file dei centroidi
-
+        else
+            centroidsPath = new Path(centroids);
+    
         conf.setDouble("threshold", threshold);
         conf.setStrings("centroidsFilePath", centroids);
-        int iteration = 1;
         
+        int iteration = 1;
         Job job;
         Boolean isConverged = false;
         while(!isConverged){
@@ -111,8 +111,8 @@ public class Kmean{
             // isConverged = true;
             if (!isConverged)
                 fs.delete(new Path(otherArgs[1]), true);
-            System.out.println("Counter: " + counter);
-            System.out.println(("Iteration: ") + iteration);
+            System.out.println("Current iteration: " + iteration);
+            System.out.println("Unconverged centroids: " + counter);
             iteration++;
         }
         System.out.println();
@@ -136,8 +136,45 @@ public class Kmean{
         bw.close();
     }
 
-    //private void generateCentroids(FileSystem fs, int num_centroids, Path inputPath){
-
-    // }
+    private static Path generateCentroids(FileSystem fs, int num_centroids, Path inputPath) throws IOException{
+        ArrayList<Integer> random_points_indexes = new ArrayList<Integer>(); 
+        int pointNum = Integer.parseInt(inputPath.toString().split("_")[1]);
+        Path centroidPath = new Path("initial_means/random_centroids.txt");
+        Random objGenerator = new Random();
+        int lineCounter = 0;
+        int idCounter = 1;
+        // choose num_centroids random points and set them as initial centroids.
+        for (int i = 1; i <= num_centroids; i++){
+            
+            random_points_indexes.add(objGenerator.nextInt(pointNum + 1));
+        }
+        try{
+            BufferedReader br = new BufferedReader (new InputStreamReader(fs.open(inputPath)));
+            BufferedWriter bw =  new BufferedWriter( new OutputStreamWriter(fs.create(centroidPath, true))); //override if exist
+            String line = br.readLine();
+            //read all points
+            while (line != null){  
+                if(random_points_indexes.contains(lineCounter)){
+                    bw.write(idCounter+"\t"+line+"\n");
+                    idCounter++;
+                }
+                line = br.readLine();
+                lineCounter++;
+                
+            }
+            br.close();
+            
+            
+            int point_num = points.size();
+            Random objGenerator = new Random();
+            // choose num_centroids random points and set them as initial centroids.
+            for (int i = 1; i <= num_centroids; i++){
+                int randomPoint = objGenerator.nextInt(point_num + 1);
+                bw.write(i+"\t"+points.get(randomPoint)+"\n");
+            }
+            bw.close();
+        }
+        return centroidPath;
+    }
 }
 
