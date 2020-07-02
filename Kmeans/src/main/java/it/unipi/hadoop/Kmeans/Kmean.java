@@ -14,12 +14,9 @@ import java.util.Random;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.ctc.wstx.util.StringUtil;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
@@ -29,7 +26,6 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 
 import org.apache.hadoop.util.GenericOptionsParser;
-import org.apache.hadoop.io.NullWritable;
 
 public class Kmean{
 
@@ -97,7 +93,7 @@ public class Kmean{
 
             job.waitForCompletion(true);
 
-            //cambiare file con i centroidi, cos
+            // creates the final centroids file in order to not overwrite the initial one
             if(iteration  == 1){ //first iteration
                 centroids = centroids.split("\\.")[0]+"_final.txt";
                 conf.setStrings("centroidsFilePath",centroids );
@@ -109,7 +105,6 @@ public class Kmean{
                         
             long counter = job.getCounters().findCounter(CentroidCounter.NUMBER_OF_UNCONVERGED).getValue();
             isConverged = (counter == 0 || iteration > max_iterations);
-            // isConverged = true;
             if (!isConverged)
                 fs.delete(new Path(otherArgs[1]), true);
             System.out.println("Current iteration: " + iteration);
