@@ -41,9 +41,9 @@ import java.util.Iterator;
       }
     }
       
-
+  
+  //this function finds and emits the index of the closest centroid for each point
   public void map(final Object key, final Text value, final Context context) throws IOException, InterruptedException{
-    //this function finds and emits the index of the closest centroid for each point
     point.set(getCoordinatesPoint(value.toString()), 1); 
     double min_distance = Double.MAX_VALUE;
     int min_index = 0;
